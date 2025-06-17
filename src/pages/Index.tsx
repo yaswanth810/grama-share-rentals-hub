@@ -4,6 +4,9 @@ import { useAuth } from '@/contexts/AuthContext';
 import AuthPage from '@/components/auth/AuthPage';
 import Header from '@/components/layout/Header';
 import EquipmentList from '@/components/equipment/EquipmentList';
+import ListingDetails from '@/components/equipment/ListingDetails';
+import ContactOwner from '@/components/equipment/ContactOwner';
+import AddListing from '@/components/equipment/AddListing';
 import { Tables } from '@/integrations/supabase/types';
 
 type Listing = Tables<'listings'> & {
@@ -41,6 +44,15 @@ const Index = () => {
     setCurrentView('contact-owner');
   };
 
+  const handleBackToHome = () => {
+    setSelectedListing(null);
+    setCurrentView('home');
+  };
+
+  const handleBackToDetails = () => {
+    setCurrentView('listing-details');
+  };
+
   const renderCurrentView = () => {
     switch (currentView) {
       case 'home':
@@ -50,6 +62,35 @@ const Index = () => {
             onContact={handleContact}
           />
         );
+        
+      case 'listing-details':
+        return selectedListing ? (
+          <ListingDetails
+            listing={selectedListing}
+            onBack={handleBackToHome}
+            onContact={handleContact}
+          />
+        ) : (
+          <div className="text-center py-12">
+            <p className="text-gray-600">Listing not found</p>
+          </div>
+        );
+        
+      case 'contact-owner':
+        return selectedListing ? (
+          <ContactOwner
+            listing={selectedListing}
+            onBack={handleBackToDetails}
+          />
+        ) : (
+          <div className="text-center py-12">
+            <p className="text-gray-600">Listing not found</p>
+          </div>
+        );
+        
+      case 'add-listing':
+        return <AddListing onBack={handleBackToHome} />;
+        
       case 'my-listings':
         return (
           <div className="text-center py-12">
@@ -57,6 +98,7 @@ const Index = () => {
             <p className="text-gray-600">Coming soon! You'll be able to manage your equipment listings here.</p>
           </div>
         );
+        
       case 'bookings':
         return (
           <div className="text-center py-12">
@@ -64,13 +106,7 @@ const Index = () => {
             <p className="text-gray-600">Coming soon! You'll be able to view your rental bookings here.</p>
           </div>
         );
-      case 'add-listing':
-        return (
-          <div className="text-center py-12">
-            <h2 className="text-2xl font-bold text-gray-800 mb-4">Add New Listing</h2>
-            <p className="text-gray-600">Coming soon! You'll be able to add new equipment for rent here.</p>
-          </div>
-        );
+        
       case 'messages':
         return (
           <div className="text-center py-12">
@@ -78,6 +114,7 @@ const Index = () => {
             <p className="text-gray-600">Coming soon! You'll be able to chat with other community members here.</p>
           </div>
         );
+        
       case 'profile':
         return (
           <div className="text-center py-12">
@@ -85,6 +122,7 @@ const Index = () => {
             <p className="text-gray-600">Coming soon! You'll be able to manage your profile here.</p>
           </div>
         );
+        
       default:
         return (
           <EquipmentList
