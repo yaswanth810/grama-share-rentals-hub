@@ -168,17 +168,6 @@ To democratize access to agricultural equipment by creating a trusted marketplac
 
 ## 🚀 Deployment
 
-### Quick Deploy with Lovable
-1. Open your [Lovable Project](https://lovable.dev/projects/8d76b2d6-d66f-4c4a-8dd3-082bf24e4b6d)
-2. Click **Share** → **Publish**
-3. Your app will be live instantly
-
-### Custom Domain Setup
-1. Navigate to **Project** → **Settings** → **Domains**
-2. Click **Connect Domain**
-3. Follow the setup instructions
-4. [Detailed guide](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
-
 ### Alternative Deployment Options
 - **Vercel**: Connect your GitHub repository for automatic deployments
 - **Netlify**: Drag and drop build folder for instant hosting
@@ -200,22 +189,9 @@ We welcome contributions to improve AgriRent! Here's how you can help:
 - Write clear, descriptive commit messages
 - Test thoroughly on mobile devices
 
-## 📞 Support & Community
-
-- **Documentation**: [Lovable Docs](https://docs.lovable.dev/)
-- **Community**: [Discord Channel](https://discord.com/channels/1119885301872070706/1280461670979993613)
-- **Video Tutorials**: [YouTube Playlist](https://www.youtube.com/watch?v=9KHLTZaJcR8&list=PLbVHz4urQBZkJiAWdG8HWoJTdgEysigIO)
-
 ## 📄 License
 
 This project is open source and available under the [MIT License](LICENSE).
-
-## 🙏 Acknowledgments
-
-- **Lovable Platform** - For providing the development environment
-- **Supabase** - For backend infrastructure
-- **shadcn/ui** - For beautiful UI components
-- **Agricultural Community** - For inspiration and feedback
 
 ---
 
