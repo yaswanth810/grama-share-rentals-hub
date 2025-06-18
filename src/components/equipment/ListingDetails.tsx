@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { MapPin, Star, Calendar, Shield, ArrowLeft, MessageCircle, Phone } from 'lucide-react';
+import { MapPin, Star, Calendar, Shield, ArrowLeft, MessageCircle, Phone, CalendarCheck } from 'lucide-react';
 import { Tables } from '@/integrations/supabase/types';
 
 type Listing = Tables<'listings'> & {
@@ -16,9 +16,10 @@ interface ListingDetailsProps {
   listing: Listing;
   onBack: () => void;
   onContact: (listing: Listing) => void;
+  onBooking?: (listing: Listing) => void;
 }
 
-const ListingDetails: React.FC<ListingDetailsProps> = ({ listing, onBack, onContact }) => {
+const ListingDetails: React.FC<ListingDetailsProps> = ({ listing, onBack, onContact, onBooking }) => {
   const getConditionColor = (condition: string) => {
     switch (condition) {
       case 'excellent': return 'bg-green-100 text-green-800';
@@ -210,9 +211,20 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({ listing, onBack, onCont
           {/* Contact Actions */}
           <Card>
             <CardContent className="p-4 space-y-3">
+              {onBooking && (
+                <Button 
+                  onClick={() => onBooking(listing)} 
+                  className="w-full bg-green-600 hover:bg-green-700"
+                >
+                  <CalendarCheck className="h-4 w-4 mr-2" />
+                  Book Now
+                </Button>
+              )}
+              
               <Button 
                 onClick={() => onContact(listing)} 
-                className="w-full bg-green-600 hover:bg-green-700"
+                variant="outline"
+                className="w-full"
               >
                 <MessageCircle className="h-4 w-4 mr-2" />
                 Contact Owner
