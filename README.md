@@ -1,8 +1,6 @@
 
 # 🚜 AgriRent - Agricultural Equipment Rental Platform
 
-**URL**: https://lovable.dev/projects/8d76b2d6-d66f-4c4a-8dd3-082bf24e4b6d
-
 ## 📖 Project Overview
 
 AgriRent is a comprehensive digital platform that connects agricultural equipment owners with farmers and agricultural workers who need to rent equipment. Built specifically for rural communities, this platform bridges the gap between equipment availability and demand, promoting efficient resource utilization and supporting agricultural productivity.
