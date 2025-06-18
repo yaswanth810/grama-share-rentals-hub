@@ -7,39 +7,48 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
-import { ArrowLeft, Plus, Upload } from 'lucide-react';
+import { ArrowLeft, Plus, Edit } from 'lucide-react';
 import { Tables } from '@/integrations/supabase/types';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 
+type Listing = Tables<'listings'> & {
+  profiles?: Tables<'profiles'>;
+  categories?: Tables<'categories'>;
+};
+
 interface AddListingProps {
   onBack: () => void;
+  listing?: Listing;
 }
 
-const AddListing: React.FC<AddListingProps> = ({ onBack }) => {
+const AddListing: React.FC<AddListingProps> = ({ onBack, listing }) => {
   const { user } = useAuth();
   const [categories, setCategories] = useState<Tables<'categories'>[]>([]);
   const [loading, setLoading] = useState(false);
+  const isEditing = !!listing;
   
   // Form state
   const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    category_id: '',
-    daily_rate: '',
-    weekly_rate: '',
-    monthly_rate: '',
-    security_deposit: '',
-    condition: '',
-    location_village: '',
-    location_district: '',
-    location_state: '',
-    min_rental_days: '1',
-    max_rental_days: '30',
+    title: listing?.title || '',
+    description: listing?.description || '',
+    category_id: listing?.category_id || '',
+    daily_rate: listing?.daily_rate?.toString() || '',
+    weekly_rate: listing?.weekly_rate?.toString() || '',
+    monthly_rate: listing?.monthly_rate?.toString() || '',
+    security_deposit: listing?.security_deposit?.toString() || '',
+    condition: listing?.condition || '',
+    location_village: listing?.location_village || '',
+    location_district: listing?.location_district || '',
+    location_state: listing?.location_state || '',
+    min_rental_days: listing?.min_rental_days?.toString() || '1',
+    max_rental_days: listing?.max_rental_days?.toString() || '30',
   });
 
-  const [pickupOptions, setPickupOptions] = useState<string[]>([]);
+  const [pickupOptions, setPickupOptions] = useState<string[]>(
+    listing?.pickup_delivery_options || []
+  );
 
   useEffect(() => {
     fetchCategories();
@@ -123,22 +132,36 @@ const AddListing: React.FC<AddListingProps> = ({ onBack }) => {
         pickup_delivery_options: pickupOptions
       };
 
-      const { error } = await supabase
-        .from('listings')
-        .insert(listingData);
+      if (isEditing && listing) {
+        const { error } = await supabase
+          .from('listings')
+          .update(listingData)
+          .eq('id', listing.id);
 
-      if (error) throw error;
+        if (error) throw error;
 
-      toast({
-        title: "Success!",
-        description: "Your equipment has been listed successfully."
-      });
+        toast({
+          title: "Success!",
+          description: "Your equipment listing has been updated successfully."
+        });
+      } else {
+        const { error } = await supabase
+          .from('listings')
+          .insert(listingData);
+
+        if (error) throw error;
+
+        toast({
+          title: "Success!",
+          description: "Your equipment has been listed successfully."
+        });
+      }
 
       onBack();
     } catch (error) {
       toast({
         title: "Error",
-        description: "Failed to create listing. Please try again.",
+        description: isEditing ? "Failed to update listing. Please try again." : "Failed to create listing. Please try again.",
         variant: "destructive"
       });
     } finally {
@@ -160,11 +183,14 @@ const AddListing: React.FC<AddListingProps> = ({ onBack }) => {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
-            <Plus className="h-5 w-5" />
-            <span>Add New Equipment Listing</span>
+            {isEditing ? <Edit className="h-5 w-5" /> : <Plus className="h-5 w-5" />}
+            <span>{isEditing ? 'Edit Equipment Listing' : 'Add New Equipment Listing'}</span>
           </CardTitle>
           <p className="text-sm text-gray-600">
-            List your equipment for rent and start earning from your unused items.
+            {isEditing 
+              ? 'Update your equipment details and pricing.'
+              : 'List your equipment for rent and start earning from your unused items.'
+            }
           </p>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -366,7 +392,10 @@ const AddListing: React.FC<AddListingProps> = ({ onBack }) => {
             disabled={loading}
             className="w-full bg-green-600 hover:bg-green-700"
           >
-            {loading ? "Creating Listing..." : "Create Listing"}
+            {loading 
+              ? (isEditing ? "Updating Listing..." : "Creating Listing...") 
+              : (isEditing ? "Update Listing" : "Create Listing")
+            }
           </Button>
         </CardContent>
       </Card>
