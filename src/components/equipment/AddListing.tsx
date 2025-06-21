@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -12,6 +11,7 @@ import { Tables } from '@/integrations/supabase/types';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
+import ImageUpload from './ImageUpload';
 
 type Listing = Tables<'listings'> & {
   profiles?: Tables<'profiles'>;
@@ -49,6 +49,8 @@ const AddListing: React.FC<AddListingProps> = ({ onBack, listing }) => {
   const [pickupOptions, setPickupOptions] = useState<string[]>(
     listing?.pickup_delivery_options || []
   );
+
+  const [images, setImages] = useState<string[]>(listing?.images || []);
 
   useEffect(() => {
     fetchCategories();
@@ -129,7 +131,8 @@ const AddListing: React.FC<AddListingProps> = ({ onBack, listing }) => {
         location_state: formData.location_state,
         min_rental_days: parseInt(formData.min_rental_days),
         max_rental_days: parseInt(formData.max_rental_days),
-        pickup_delivery_options: pickupOptions
+        pickup_delivery_options: pickupOptions,
+        images: images
       };
 
       if (isEditing && listing) {
@@ -250,6 +253,17 @@ const AddListing: React.FC<AddListingProps> = ({ onBack, listing }) => {
                 </Select>
               </div>
             </div>
+          </div>
+
+          {/* Images Section */}
+          <div className="space-y-4">
+            <h3 className="font-medium">Equipment Images</h3>
+            <ImageUpload 
+              images={images}
+              onImagesChange={setImages}
+              maxImages={3}
+              maxSizePerImage={2}
+            />
           </div>
 
           {/* Pricing */}
