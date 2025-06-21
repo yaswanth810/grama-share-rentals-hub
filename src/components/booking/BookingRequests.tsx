@@ -10,14 +10,26 @@ import { useAuth } from '@/contexts/AuthContext';
 import { toast } from '@/hooks/use-toast';
 import { Tables } from '@/integrations/supabase/types';
 
-type Booking = Tables<'bookings'> & {
-  listings: Tables<'listings'>;
-  profiles: Tables<'profiles'>;
+type BookingWithDetails = Tables<'bookings'> & {
+  listings: {
+    id: string;
+    title: string;
+    daily_rate: number;
+    location_village: string;
+    location_district: string;
+  };
+  profiles: {
+    id: string;
+    full_name: string;
+    phone: string | null;
+    village: string;
+    district: string;
+  };
 };
 
 const BookingRequests: React.FC = () => {
   const { user } = useAuth();
-  const [bookings, setBookings] = useState<Booking[]>([]);
+  const [bookings, setBookings] = useState<BookingWithDetails[]>([]);
   const [loading, setLoading] = useState(true);
   const [processingId, setProcessingId] = useState<string | null>(null);
 
