@@ -1,10 +1,13 @@
 
 import React from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useMessages } from '@/contexts/MessageContext';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Badge } from '@/components/ui/badge';
 import { User, LogOut, Plus, MessageCircle } from 'lucide-react';
+import NotificationDropdown from '@/components/notifications/NotificationDropdown';
 
 interface HeaderProps {
   currentView: string;
@@ -13,6 +16,7 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ currentView, onViewChange }) => {
   const { user, signOut } = useAuth();
+  const { hasUnreadMessages } = useMessages();
 
   return (
     <header className="bg-white shadow-sm border-b border-green-100">
@@ -68,9 +72,15 @@ const Header: React.FC<HeaderProps> = ({ currentView, onViewChange }) => {
               onClick={() => onViewChange('messages')}
               variant="outline"
               size="sm"
+              className="relative"
             >
               <MessageCircle className="h-4 w-4" />
+              {hasUnreadMessages && (
+                <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"></div>
+              )}
             </Button>
+
+            <NotificationDropdown />
             
             <DropdownMenu>
               <DropdownMenuTrigger>

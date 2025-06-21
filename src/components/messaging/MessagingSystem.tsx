@@ -1,7 +1,7 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { useMessages } from '@/contexts/MessageContext';
 import { Tables } from '@/integrations/supabase/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -25,6 +25,7 @@ type Conversation = {
 
 const MessagingSystem: React.FC = () => {
   const { user } = useAuth();
+  const { refreshUnreadCount } = useMessages();
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [selectedConversation, setSelectedConversation] = useState<Tables<'profiles'> | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -137,6 +138,9 @@ const MessagingSystem: React.FC = () => {
       .update({ is_read: true })
       .eq('sender_id', senderId)
       .eq('receiver_id', user.id);
+
+    // Refresh the unread count in the header
+    refreshUnreadCount();
   };
 
   const sendMessage = async () => {
