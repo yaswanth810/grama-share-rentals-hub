@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import AuthPage from '@/components/auth/AuthPage';
@@ -9,6 +8,7 @@ import ContactOwner from '@/components/equipment/ContactOwner';
 import AddListing from '@/components/equipment/AddListing';
 import MyListings from '@/components/equipment/MyListings';
 import BookingCalendar from '@/components/booking/BookingCalendar';
+import BookingRequests from '@/components/booking/BookingRequests';
 import MessagingSystem from '@/components/messaging/MessagingSystem';
 import UserProfile from '@/components/profile/UserProfile';
 import { Tables } from '@/integrations/supabase/types';
@@ -144,12 +144,7 @@ const Index = () => {
         );
         
       case 'bookings':
-        return (
-          <div className="text-center py-12">
-            <h2 className="text-2xl font-bold text-gray-800 mb-4">My Bookings</h2>
-            <p className="text-gray-600">Coming soon! You'll be able to view your rental bookings here.</p>
-          </div>
-        );
+        return <BookingRequests />;
         
       case 'messages':
         return <MessagingSystem />;

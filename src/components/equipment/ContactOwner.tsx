@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { ArrowLeft, Send, Calendar } from 'lucide-react';
+import { ArrowLeft, Send, MessageSquare, HelpCircle } from 'lucide-react';
 import { Tables } from '@/integrations/supabase/types';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -24,37 +24,20 @@ interface ContactOwnerProps {
 const ContactOwner: React.FC<ContactOwnerProps> = ({ listing, onBack }) => {
   const { user } = useAuth();
   const [message, setMessage] = useState('');
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
+  const [subject, setSubject] = useState('');
   const [sending, setSending] = useState(false);
 
-  const calculateDays = () => {
-    if (startDate && endDate) {
-      const start = new Date(startDate);
-      const end = new Date(endDate);
-      const diffTime = Math.abs(end.getTime() - start.getTime());
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
-      return diffDays;
-    }
-    return 0;
-  };
+  const quickQuestions = [
+    "Is the equipment currently available?",
+    "What are the pickup/delivery options?",
+    "Can you provide more details about the condition?",
+    "Are there any additional charges or requirements?",
+    "What documentation is needed for rental?",
+    "Do you offer any training for equipment usage?"
+  ];
 
-  const calculateTotal = () => {
-    const days = calculateDays();
-    if (days <= 0) return 0;
-    
-    // Calculate based on weekly/monthly rates if applicable
-    if (listing.monthly_rate && days >= 30) {
-      const months = Math.floor(days / 30);
-      const remainingDays = days % 30;
-      return (months * listing.monthly_rate) + (remainingDays * listing.daily_rate);
-    } else if (listing.weekly_rate && days >= 7) {
-      const weeks = Math.floor(days / 7);
-      const remainingDays = days % 7;
-      return (weeks * listing.weekly_rate) + (remainingDays * listing.daily_rate);
-    } else {
-      return days * listing.daily_rate;
-    }
+  const handleQuickQuestion = (question: string) => {
+    setMessage(question);
   };
 
   const handleSendMessage = async () => {
@@ -76,17 +59,18 @@ const ContactOwner: React.FC<ContactOwnerProps> = ({ listing, onBack }) => {
           sender_id: user!.id,
           receiver_id: listing.owner_id,
           listing_id: listing.id,
-          content: message
+          content: `${subject ? `Subject: ${subject}\n\n` : ''}${message}`
         });
 
       if (error) throw error;
 
       toast({
         title: "Message sent!",
-        description: "Your message has been sent to the equipment owner."
+        description: "Your inquiry has been sent to the equipment owner."
       });
 
       setMessage('');
+      setSubject('');
       onBack();
     } catch (error) {
       toast({
@@ -107,9 +91,6 @@ const ContactOwner: React.FC<ContactOwnerProps> = ({ listing, onBack }) => {
     }).format(amount);
   };
 
-  const days = calculateDays();
-  const total = calculateTotal();
-
   return (
     <div className="max-w-2xl mx-auto space-y-6">
       <Button 
@@ -123,60 +104,47 @@ const ContactOwner: React.FC<ContactOwnerProps> = ({ listing, onBack }) => {
 
       <Card>
         <CardHeader>
-          <CardTitle>Contact Equipment Owner</CardTitle>
+          <CardTitle className="flex items-center space-x-2">
+            <MessageSquare className="h-5 w-5 text-blue-600" />
+            <span>Send Inquiry</span>
+          </CardTitle>
           <p className="text-sm text-gray-600">
-            Interested in renting "{listing.title}" from {listing.profiles?.full_name}?
+            Have questions about "{listing.title}" from {listing.profiles?.full_name}? Send them a message!
           </p>
         </CardHeader>
         <CardContent className="space-y-6">
-          {/* Rental Period Calculator */}
-          <div className="bg-green-50 p-4 rounded-lg space-y-4">
-            <h3 className="font-medium flex items-center space-x-2">
-              <Calendar className="h-4 w-4" />
-              <span>Rental Period (Optional)</span>
+          {/* Quick Questions */}
+          <div className="bg-blue-50 p-4 rounded-lg space-y-4">
+            <h3 className="font-medium flex items-center space-x-2 text-blue-800">
+              <HelpCircle className="h-4 w-4" />
+              <span>Quick Questions</span>
             </h3>
+            <p className="text-sm text-blue-700">
+              Click on any question below to add it to your message:
+            </p>
             
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="start-date">Start Date</Label>
-                <Input
-                  id="start-date"
-                  type="date"
-                  value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
-                  min={new Date().toISOString().split('T')[0]}
-                />
-              </div>
-              <div>
-                <Label htmlFor="end-date">End Date</Label>
-                <Input
-                  id="end-date"
-                  type="date"
-                  value={endDate}
-                  onChange={(e) => setEndDate(e.target.value)}
-                  min={startDate || new Date().toISOString().split('T')[0]}
-                />
-              </div>
+            <div className="grid grid-cols-1 gap-2">
+              {quickQuestions.map((question, index) => (
+                <button
+                  key={index}
+                  onClick={() => handleQuickQuestion(question)}
+                  className="text-left p-2 bg-white hover:bg-blue-100 rounded border border-blue-200 text-sm transition-colors"
+                >
+                  {question}
+                </button>
+              ))}
             </div>
-            
-            {days > 0 && (
-              <div className="bg-white p-3 rounded border">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm font-medium">Rental Duration:</span>
-                  <span>{days} day{days !== 1 ? 's' : ''}</span>
-                </div>
-                <div className="flex justify-between items-center text-lg font-bold text-green-600">
-                  <span>Estimated Total:</span>
-                  <span>{formatCurrency(total)}</span>
-                </div>
-                {listing.security_deposit && listing.security_deposit > 0 && (
-                  <div className="flex justify-between items-center text-sm text-gray-600">
-                    <span>+ Security Deposit:</span>
-                    <span>{formatCurrency(listing.security_deposit)}</span>
-                  </div>
-                )}
-              </div>
-            )}
+          </div>
+
+          {/* Subject */}
+          <div className="space-y-2">
+            <Label htmlFor="subject">Subject (Optional)</Label>
+            <Input
+              id="subject"
+              placeholder="e.g., Availability inquiry, Usage questions, etc."
+              value={subject}
+              onChange={(e) => setSubject(e.target.value)}
+            />
           </div>
 
           {/* Message */}
@@ -184,39 +152,70 @@ const ContactOwner: React.FC<ContactOwnerProps> = ({ listing, onBack }) => {
             <Label htmlFor="message">Your Message</Label>
             <Textarea
               id="message"
-              placeholder={`Hi ${listing.profiles?.full_name}, I'm interested in renting your ${listing.title}. ${startDate && endDate ? `I would like to rent it from ${new Date(startDate).toLocaleDateString()} to ${new Date(endDate).toLocaleDateString()}.` : ''} Please let me know about availability and pickup details.`}
+              placeholder={`Hi ${listing.profiles?.full_name}, I'm interested in your ${listing.title}. I have some questions about availability and rental details. Please let me know when would be a good time to discuss.`}
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              rows={5}
+              rows={6}
               className="resize-none"
             />
             <p className="text-xs text-gray-500">
-              Be polite and include specific details about your rental needs.
+              Be specific about your questions to get a quick and helpful response.
             </p>
           </div>
 
           {/* Equipment Summary */}
           <div className="bg-gray-50 p-4 rounded-lg">
-            <h4 className="font-medium mb-2">Equipment Details</h4>
-            <div className="text-sm space-y-1">
-              <p><span className="font-medium">Item:</span> {listing.title}</p>
-              <p><span className="font-medium">Daily Rate:</span> {formatCurrency(listing.daily_rate)}</p>
-              <p><span className="font-medium">Location:</span> {listing.location_village}, {listing.location_district}</p>
-              <p><span className="font-medium">Condition:</span> {listing.condition}</p>
+            <h4 className="font-medium mb-3 text-gray-800">Equipment Details</h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+              <div>
+                <span className="font-medium text-gray-600">Item:</span>
+                <p>{listing.title}</p>
+              </div>
+              <div>
+                <span className="font-medium text-gray-600">Daily Rate:</span>
+                <p className="text-green-600 font-semibold">{formatCurrency(listing.daily_rate)}</p>
+              </div>
+              <div>
+                <span className="font-medium text-gray-600">Location:</span>
+                <p>{listing.location_village}, {listing.location_district}</p>
+              </div>
+              <div>
+                <span className="font-medium text-gray-600">Condition:</span>
+                <p className="capitalize">{listing.condition}</p>
+              </div>
+              {listing.security_deposit && listing.security_deposit > 0 && (
+                <div>
+                  <span className="font-medium text-gray-600">Security Deposit:</span>
+                  <p>{formatCurrency(listing.security_deposit)}</p>
+                </div>
+              )}
+              <div>
+                <span className="font-medium text-gray-600">Owner:</span>
+                <p>{listing.profiles?.full_name}</p>
+              </div>
             </div>
+          </div>
+
+          {/* Contact Notice */}
+          <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+            <h4 className="font-medium text-yellow-800 mb-2">💡 For Booking</h4>
+            <p className="text-sm text-yellow-700">
+              If you're ready to book this equipment, use the "Book Now" button on the main listing page to make a reservation with specific dates.
+              This message form is for general inquiries and questions only.
+            </p>
           </div>
 
           <Button 
             onClick={handleSendMessage}
             disabled={sending}
-            className="w-full bg-green-600 hover:bg-green-700"
+            className="w-full bg-blue-600 hover:bg-blue-700"
           >
             {sending ? (
               "Sending..."
             ) : (
               <>
                 <Send className="h-4 w-4 mr-2" />
-                Send Message
+                Send Inquiry
               </>
             )}
           </Button>

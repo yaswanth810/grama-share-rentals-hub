@@ -49,7 +49,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const signUp = async (email: string, password: string, userData: any) => {
-    const redirectUrl = `${window.location.origin}/`;
+    // Use production URL for redirect, fallback to current origin for development
+    const redirectUrl = window.location.hostname === 'localhost' 
+      ? `${window.location.origin}/`
+      : 'https://grama-share-rentals-hub-yaswanths-projects-032596f9.vercel.app/';
     
     const { error } = await supabase.auth.signUp({
       email,
