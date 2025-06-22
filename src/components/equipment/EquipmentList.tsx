@@ -7,19 +7,49 @@ import EquipmentFilters from './EquipmentFilters';
 import { Loader2 } from 'lucide-react';
 
 // Simplified type definition to avoid deep instantiation
-interface Listing extends Tables<'listings'> {
-  profiles: Tables<'profiles'>;
-  categories: Tables<'categories'>;
-}
+type SimpleListing = {
+  id: string;
+  title: string;
+  description: string;
+  daily_rate: number;
+  weekly_rate: number | null;
+  monthly_rate: number | null;
+  security_deposit: number | null;
+  min_rental_days: number | null;
+  max_rental_days: number | null;
+  condition: string | null;
+  images: string[] | null;
+  location_village: string;
+  location_district: string;
+  location_state: string;
+  category_id: string;
+  owner_id: string;
+  created_at: string;
+  updated_at: string;
+  availability_status: string | null;
+  pickup_delivery_options: string[] | null;
+  profiles: {
+    id: string;
+    full_name: string;
+    rating: number | null;
+    avatar_url: string | null;
+    username: string;
+  };
+  categories: {
+    id: string;
+    name: string;
+    icon: string | null;
+  };
+};
 
 interface EquipmentListProps {
-  onViewDetails: (listing: Listing) => void;
-  onContact: (listing: Listing) => void;
+  onViewDetails: (listing: SimpleListing) => void;
+  onContact: (listing: SimpleListing) => void;
 }
 
 const EquipmentList: React.FC<EquipmentListProps> = ({ onViewDetails, onContact }) => {
-  const [listings, setListings] = useState<Listing[]>([]);
-  const [filteredListings, setFilteredListings] = useState<Listing[]>([]);
+  const [listings, setListings] = useState<SimpleListing[]>([]);
+  const [filteredListings, setFilteredListings] = useState<SimpleListing[]>([]);
   const [loading, setLoading] = useState(true);
   const [categories, setCategories] = useState<Tables<'categories'>[]>([]);
   
@@ -46,13 +76,13 @@ const EquipmentList: React.FC<EquipmentListProps> = ({ onViewDetails, onContact 
         profiles (*),
         categories (*)
       `)
-      .eq('status', 'active')
+      .eq('availability_status', 'available')
       .order('created_at', { ascending: false });
 
     if (error) {
       console.error('Error fetching listings:', error);
     } else {
-      setListings(data as Listing[] || []);
+      setListings(data as SimpleListing[] || []);
     }
     setLoading(false);
   };

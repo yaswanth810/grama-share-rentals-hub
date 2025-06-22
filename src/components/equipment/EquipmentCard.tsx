@@ -4,17 +4,46 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { MapPin, Calendar, Eye, MessageCircle, Star } from 'lucide-react';
-import { Tables } from '@/integrations/supabase/types';
 
-type Listing = Tables<'listings'> & {
-  profiles: Tables<'profiles'>;
-  categories: Tables<'categories'>;
+type SimpleListing = {
+  id: string;
+  title: string;
+  description: string;
+  daily_rate: number;
+  weekly_rate: number | null;
+  monthly_rate: number | null;
+  security_deposit: number | null;
+  min_rental_days: number | null;
+  max_rental_days: number | null;
+  condition: string | null;
+  images: string[] | null;
+  location_village: string;
+  location_district: string;
+  location_state: string;
+  category_id: string;
+  owner_id: string;
+  created_at: string;
+  updated_at: string;
+  availability_status: string | null;
+  pickup_delivery_options: string[] | null;
+  profiles: {
+    id: string;
+    full_name: string;
+    rating: number | null;
+    avatar_url: string | null;
+    username: string;
+  };
+  categories: {
+    id: string;
+    name: string;
+    icon: string | null;
+  };
 };
 
 interface EquipmentCardProps {
-  listing: Listing;
-  onViewDetails: (listing: Listing) => void;
-  onContact: (listing: Listing) => void;
+  listing: SimpleListing;
+  onViewDetails: (listing: SimpleListing) => void;
+  onContact: (listing: SimpleListing) => void;
 }
 
 const EquipmentCard: React.FC<EquipmentCardProps> = ({ 
@@ -36,17 +65,28 @@ const EquipmentCard: React.FC<EquipmentCardProps> = ({
             src={displayImage}
             alt={listing.title}
             className="w-full h-full object-cover hover:scale-105 transition-transform duration-200"
+            onError={(e) => {
+              // Fallback to category icon if image fails to load
+              const target = e.target as HTMLImageElement;
+              target.style.display = 'none';
+              const fallback = target.parentElement?.querySelector('.fallback-content');
+              if (fallback) {
+                (fallback as HTMLElement).style.display = 'flex';
+              }
+            }}
           />
-        ) : (
-          <div className="flex flex-col items-center justify-center text-gray-400">
-            <span className="text-4xl md:text-6xl mb-2">
-              {listing.categories?.icon || '📦'}
-            </span>
-            <span className="text-xs md:text-sm text-center px-2">
-              {listing.categories?.name}
-            </span>
-          </div>
-        )}
+        ) : null}
+        <div 
+          className={`flex flex-col items-center justify-center text-gray-400 ${displayImage ? 'hidden' : ''} fallback-content`}
+          style={{ display: displayImage ? 'none' : 'flex' }}
+        >
+          <span className="text-4xl md:text-6xl mb-2">
+            {listing.categories?.icon || '📦'}
+          </span>
+          <span className="text-xs md:text-sm text-center px-2">
+            {listing.categories?.name}
+          </span>
+        </div>
       </div>
 
       <CardContent className="p-3 md:p-4">
