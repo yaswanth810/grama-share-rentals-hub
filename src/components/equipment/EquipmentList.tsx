@@ -4,7 +4,6 @@ import { supabase } from '@/integrations/supabase/client';
 import { Tables } from '@/integrations/supabase/types';
 import EquipmentCard from './EquipmentCard';
 import EquipmentFilters from './EquipmentFilters';
-import { toast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 
 type Listing = Tables<'listings'> & {
@@ -19,20 +18,35 @@ interface EquipmentListProps {
 
 const EquipmentList: React.FC<EquipmentListProps> = ({ onViewDetails, onContact }) => {
   const [listings, setListings] = useState<Listing[]>([]);
-  const [categories, setCategories] = useState<Tables<'categories'>[]>([]);
+  const [filteredListings, setFilteredListings] = useState<Listing[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('all');
-  const [selectedLocation, setSelectedLocation] = useState('all');
-
-  const locations = Array.from(
-    new Set(listings.map(listing => `${listing.location_village}, ${listing.location_district}`))
-  );
+  const [categories, setCategories] = useState<Tables<'categories'>[]>([]);
 
   useEffect(() => {
-    fetchCategories();
     fetchListings();
+    fetchCategories();
   }, []);
+
+  const fetchListings = async () => {
+    setLoading(true);
+    const { data, error } = await supabase
+      .from('listings')
+      .select(`
+        *,
+        profiles (*),
+        categories (*)
+      `)
+      .eq('status', 'active')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('Error fetching listings:', error);
+    } else {
+      setListings(data || []);
+      setFilteredListings(data || []);
+    }
+    setLoading(false);
+  };
 
   const fetchCategories = async () => {
     const { data, error } = await supabase
@@ -41,95 +55,96 @@ const EquipmentList: React.FC<EquipmentListProps> = ({ onViewDetails, onContact 
       .order('name');
 
     if (error) {
-      toast({
-        title: "Error",
-        description: "Failed to fetch categories",
-        variant: "destructive"
-      });
+      console.error('Error fetching categories:', error);
     } else {
       setCategories(data || []);
     }
   };
 
-  const fetchListings = async () => {
-    setLoading(true);
-    const { data, error } = await supabase
-      .from('listings')
-      .select(`
-        *,
-        profiles(*),
-        categories(*)
-      `)
-      .eq('availability_status', 'available')
-      .order('created_at', { ascending: false });
+  const handleFilterChange = (filters: any) => {
+    let filtered = [...listings];
 
-    if (error) {
-      toast({
-        title: "Error",
-        description: "Failed to fetch listings",
-        variant: "destructive"
-      });
-    } else {
-      setListings(data || []);
+    if (filters.category) {
+      filtered = filtered.filter(listing => listing.category_id === filters.category);
     }
-    setLoading(false);
-  };
 
-  const filteredListings = listings.filter(listing => {
-    const matchesSearch = listing.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         listing.description.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    const matchesCategory = selectedCategory === 'all' || listing.category_id === selectedCategory;
-    
-    const listingLocation = `${listing.location_village}, ${listing.location_district}`;
-    const matchesLocation = selectedLocation === 'all' || listingLocation === selectedLocation;
-    
-    return matchesSearch && matchesCategory && matchesLocation;
-  });
+    if (filters.location) {
+      filtered = filtered.filter(listing => 
+        listing.location_village.toLowerCase().includes(filters.location.toLowerCase()) ||
+        listing.location_district.toLowerCase().includes(filters.location.toLowerCase()) ||
+        listing.location_state.toLowerCase().includes(filters.location.toLowerCase())
+      );
+    }
 
-  const clearFilters = () => {
-    setSearchTerm('');
-    setSelectedCategory('all');
-    setSelectedLocation('all');
+    if (filters.priceRange) {
+      filtered = filtered.filter(listing => 
+        listing.daily_rate >= filters.priceRange[0] && 
+        listing.daily_rate <= filters.priceRange[1]
+      );
+    }
+
+    if (filters.condition) {
+      filtered = filtered.filter(listing => listing.condition === filters.condition);
+    }
+
+    setFilteredListings(filtered);
   };
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-64">
+      <div className="flex items-center justify-center py-12">
         <Loader2 className="h-8 w-8 animate-spin text-green-600" />
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
-      <EquipmentFilters
-        searchTerm={searchTerm}
-        onSearchChange={setSearchTerm}
-        selectedCategory={selectedCategory}
-        onCategoryChange={setSelectedCategory}
-        selectedLocation={selectedLocation}
-        onLocationChange={setSelectedLocation}
-        categories={categories}
-        locations={locations}
-        onClearFilters={clearFilters}
-      />
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {filteredListings.map((listing) => (
-          <EquipmentCard
-            key={listing.id}
-            listing={listing}
-            onViewDetails={onViewDetails}
-            onContact={onContact}
-          />
-        ))}
+    <div className="space-y-4 md:space-y-6">
+      <div className="text-center">
+        <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+          🌾 Equipment Rental Marketplace
+        </h1>
+        <p className="text-sm md:text-base text-gray-600 px-4">
+          Find and rent agricultural and construction equipment from your community
+        </p>
       </div>
-      
-      {filteredListings.length === 0 && (
+
+      {/* Filters - Mobile Responsive */}
+      <div className="bg-white rounded-lg shadow-sm border p-4">
+        <EquipmentFilters
+          categories={categories}
+          onFilterChange={handleFilterChange}
+        />
+      </div>
+
+      {/* Results Count */}
+      <div className="flex items-center justify-between px-1">
+        <p className="text-sm text-gray-600">
+          {filteredListings.length} equipment{filteredListings.length !== 1 ? 's' : ''} available
+        </p>
+      </div>
+
+      {/* Equipment Grid - Responsive */}
+      {filteredListings.length > 0 ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+          {filteredListings.map((listing) => (
+            <EquipmentCard
+              key={listing.id}
+              listing={listing}
+              onViewDetails={onViewDetails}
+              onContact={onContact}
+            />
+          ))}
+        </div>
+      ) : (
         <div className="text-center py-12">
-          <p className="text-gray-500 text-lg">No equipment found matching your criteria.</p>
-          <p className="text-gray-400 text-sm mt-2">Try adjusting your filters or search terms.</p>
+          <div className="text-4xl md:text-6xl mb-4">🔍</div>
+          <h3 className="text-lg md:text-xl font-medium text-gray-900 mb-2">
+            No equipment found
+          </h3>
+          <p className="text-sm md:text-base text-gray-500 max-w-md mx-auto px-4">
+            Try adjusting your filters or check back later for new listings.
+          </p>
         </div>
       )}
     </div>

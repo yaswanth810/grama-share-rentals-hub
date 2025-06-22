@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import AuthPage from '@/components/auth/AuthPage';
@@ -25,10 +26,10 @@ const Index = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center px-4">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading...</p>
+          <p className="text-gray-600 text-sm md:text-base">Loading...</p>
         </div>
       </div>
     );
@@ -165,7 +166,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-amber-50">
       <Header currentView={currentView} onViewChange={setCurrentView} />
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-8">
         {renderCurrentView()}
       </main>
     </div>
