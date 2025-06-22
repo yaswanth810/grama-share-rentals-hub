@@ -21,11 +21,20 @@ const EquipmentList: React.FC<EquipmentListProps> = ({ onViewDetails, onContact 
   const [filteredListings, setFilteredListings] = useState<Listing[]>([]);
   const [loading, setLoading] = useState(true);
   const [categories, setCategories] = useState<Tables<'categories'>[]>([]);
+  
+  // Filter states
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [selectedLocation, setSelectedLocation] = useState('all');
 
   useEffect(() => {
     fetchListings();
     fetchCategories();
   }, []);
+
+  useEffect(() => {
+    filterListings();
+  }, [listings, searchTerm, selectedCategory, selectedLocation]);
 
   const fetchListings = async () => {
     setLoading(true);
@@ -43,7 +52,6 @@ const EquipmentList: React.FC<EquipmentListProps> = ({ onViewDetails, onContact 
       console.error('Error fetching listings:', error);
     } else {
       setListings(data || []);
-      setFilteredListings(data || []);
     }
     setLoading(false);
   };
@@ -61,34 +69,44 @@ const EquipmentList: React.FC<EquipmentListProps> = ({ onViewDetails, onContact 
     }
   };
 
-  const handleFilterChange = (filters: any) => {
+  const filterListings = () => {
     let filtered = [...listings];
 
-    if (filters.category) {
-      filtered = filtered.filter(listing => listing.category_id === filters.category);
-    }
-
-    if (filters.location) {
-      filtered = filtered.filter(listing => 
-        listing.location_village.toLowerCase().includes(filters.location.toLowerCase()) ||
-        listing.location_district.toLowerCase().includes(filters.location.toLowerCase()) ||
-        listing.location_state.toLowerCase().includes(filters.location.toLowerCase())
+    // Search filter
+    if (searchTerm) {
+      filtered = filtered.filter(listing =>
+        listing.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        listing.description.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
-    if (filters.priceRange) {
-      filtered = filtered.filter(listing => 
-        listing.daily_rate >= filters.priceRange[0] && 
-        listing.daily_rate <= filters.priceRange[1]
-      );
+    // Category filter
+    if (selectedCategory !== 'all') {
+      filtered = filtered.filter(listing => listing.category_id === selectedCategory);
     }
 
-    if (filters.condition) {
-      filtered = filtered.filter(listing => listing.condition === filters.condition);
+    // Location filter
+    if (selectedLocation !== 'all') {
+      filtered = filtered.filter(listing =>
+        listing.location_village.toLowerCase().includes(selectedLocation.toLowerCase()) ||
+        listing.location_district.toLowerCase().includes(selectedLocation.toLowerCase()) ||
+        listing.location_state.toLowerCase().includes(selectedLocation.toLowerCase())
+      );
     }
 
     setFilteredListings(filtered);
   };
+
+  const handleClearFilters = () => {
+    setSearchTerm('');
+    setSelectedCategory('all');
+    setSelectedLocation('all');
+  };
+
+  // Get unique locations from listings
+  const locations = Array.from(new Set(
+    listings.map(listing => listing.location_district)
+  ));
 
   if (loading) {
     return (
@@ -110,12 +128,17 @@ const EquipmentList: React.FC<EquipmentListProps> = ({ onViewDetails, onContact 
       </div>
 
       {/* Filters - Mobile Responsive */}
-      <div className="bg-white rounded-lg shadow-sm border p-4">
-        <EquipmentFilters
-          categories={categories}
-          onFilterChange={handleFilterChange}
-        />
-      </div>
+      <EquipmentFilters
+        searchTerm={searchTerm}
+        onSearchChange={setSearchTerm}
+        selectedCategory={selectedCategory}
+        onCategoryChange={setSelectedCategory}
+        selectedLocation={selectedLocation}
+        onLocationChange={setSelectedLocation}
+        categories={categories}
+        locations={locations}
+        onClearFilters={handleClearFilters}
+      />
 
       {/* Results Count */}
       <div className="flex items-center justify-between px-1">
