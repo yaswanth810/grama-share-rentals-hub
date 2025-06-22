@@ -6,10 +6,11 @@ import EquipmentCard from './EquipmentCard';
 import EquipmentFilters from './EquipmentFilters';
 import { Loader2 } from 'lucide-react';
 
-type Listing = Tables<'listings'> & {
+// Simplified type definition to avoid deep instantiation
+interface Listing extends Tables<'listings'> {
   profiles: Tables<'profiles'>;
   categories: Tables<'categories'>;
-};
+}
 
 interface EquipmentListProps {
   onViewDetails: (listing: Listing) => void;
@@ -51,7 +52,7 @@ const EquipmentList: React.FC<EquipmentListProps> = ({ onViewDetails, onContact 
     if (error) {
       console.error('Error fetching listings:', error);
     } else {
-      setListings(data || []);
+      setListings(data as Listing[] || []);
     }
     setLoading(false);
   };
