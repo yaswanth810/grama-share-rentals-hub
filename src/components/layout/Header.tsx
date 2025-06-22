@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useMessages } from '@/contexts/MessageContext';
@@ -8,6 +7,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { User, LogOut, Plus, MessageCircle, Menu, X } from 'lucide-react';
 import NotificationDropdown from '@/components/notifications/NotificationDropdown';
+import LanguageSwitcher from '@/components/ui/LanguageSwitcher';
 
 interface HeaderProps {
   currentView: string;
@@ -86,6 +86,8 @@ const Header: React.FC<HeaderProps> = ({ currentView, onViewChange }) => {
 
             <NotificationDropdown />
             
+            <LanguageSwitcher />
+            
             <DropdownMenu>
               <DropdownMenuTrigger>
                 <Avatar className="h-8 w-8">
@@ -123,6 +125,8 @@ const Header: React.FC<HeaderProps> = ({ currentView, onViewChange }) => {
             </Button>
 
             <NotificationDropdown />
+
+            <LanguageSwitcher />
 
             {/* Mobile Menu */}
             <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>

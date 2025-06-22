@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
@@ -7,10 +6,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import Captcha from '@/components/ui/Captcha';
 
 const AuthPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { signIn, signUp } = useAuth();
+  const [signInCaptchaValid, setSignInCaptchaValid] = useState(false);
+  const [signUpCaptchaValid, setSignUpCaptchaValid] = useState(false);
 
   const [signInData, setSignInData] = useState({
     email: '',
@@ -31,6 +33,9 @@ const AuthPage = () => {
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!signInCaptchaValid) {
+      return;
+    }
     setIsLoading(true);
     await signIn(signInData.email, signInData.password);
     setIsLoading(false);
@@ -38,6 +43,9 @@ const AuthPage = () => {
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!signUpCaptchaValid) {
+      return;
+    }
     setIsLoading(true);
     await signUp(signUpData.email, signUpData.password, {
       full_name: signUpData.full_name,
@@ -89,7 +97,12 @@ const AuthPage = () => {
                     required
                   />
                 </div>
-                <Button type="submit" className="w-full bg-green-600 hover:bg-green-700" disabled={isLoading}>
+                <Captcha onVerify={setSignInCaptchaValid} isValid={signInCaptchaValid} />
+                <Button 
+                  type="submit" 
+                  className="w-full bg-green-600 hover:bg-green-700" 
+                  disabled={isLoading || !signInCaptchaValid}
+                >
                   {isLoading ? 'Signing in...' : 'Sign In'}
                 </Button>
               </form>
@@ -191,7 +204,13 @@ const AuthPage = () => {
                   />
                 </div>
                 
-                <Button type="submit" className="w-full bg-green-600 hover:bg-green-700" disabled={isLoading}>
+                <Captcha onVerify={setSignUpCaptchaValid} isValid={signUpCaptchaValid} />
+                
+                <Button 
+                  type="submit" 
+                  className="w-full bg-green-600 hover:bg-green-700" 
+                  disabled={isLoading || !signUpCaptchaValid}
+                >
                   {isLoading ? 'Creating account...' : 'Join Community'}
                 </Button>
               </form>
