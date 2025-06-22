@@ -4,6 +4,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { MapPin, Calendar, Eye, MessageCircle, Star } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 type SimpleListing = {
   id: string;
@@ -51,6 +52,8 @@ const EquipmentCard: React.FC<EquipmentCardProps> = ({
   onViewDetails, 
   onContact 
 }) => {
+  const { t } = useLanguage();
+  
   // Get the first image or fallback to category icon
   const displayImage = listing.images && listing.images.length > 0 
     ? listing.images[0] 
@@ -108,7 +111,7 @@ const EquipmentCard: React.FC<EquipmentCardProps> = ({
           <div className="flex items-center ml-2 flex-shrink-0">
             <Star className="h-3 w-3 md:h-4 md:w-4 text-yellow-400 fill-current" />
             <span className="text-xs md:text-sm text-gray-600 ml-1">
-              {listing.profiles?.rating?.toFixed(1) || 'New'}
+              {listing.profiles?.rating?.toFixed(1) || t('equipmentCard.new')}
             </span>
           </div>
         </div>
@@ -134,11 +137,11 @@ const EquipmentCard: React.FC<EquipmentCardProps> = ({
             <span className="text-lg md:text-xl font-bold text-green-600">
               ₹{listing.daily_rate}
             </span>
-            <span className="text-xs md:text-sm text-gray-500">/day</span>
+            <span className="text-xs md:text-sm text-gray-500">{t('equipmentCard.day')}</span>
           </div>
           {listing.weekly_rate && (
             <div className="text-xs text-gray-500">
-              ₹{listing.weekly_rate}/week
+              ₹{listing.weekly_rate}{t('equipmentCard.week')}
             </div>
           )}
         </div>
@@ -147,7 +150,7 @@ const EquipmentCard: React.FC<EquipmentCardProps> = ({
         <div className="flex items-center text-xs text-gray-500 mb-3">
           <Calendar className="h-3 w-3 mr-1" />
           <span>
-            {listing.min_rental_days}-{listing.max_rental_days} days
+            {listing.min_rental_days}-{listing.max_rental_days} {t('equipmentCard.days')}
           </span>
         </div>
 
@@ -160,7 +163,7 @@ const EquipmentCard: React.FC<EquipmentCardProps> = ({
             className="flex-1 text-xs md:text-sm"
           >
             <Eye className="h-3 w-3 md:h-4 md:w-4 mr-1" />
-            View Details
+            {t('equipmentCard.viewDetails')}
           </Button>
           <Button
             onClick={() => onContact(listing)}
@@ -168,7 +171,7 @@ const EquipmentCard: React.FC<EquipmentCardProps> = ({
             className="flex-1 bg-green-600 hover:bg-green-700 text-xs md:text-sm"
           >
             <MessageCircle className="h-3 w-3 md:h-4 md:w-4 mr-1" />
-            Contact
+            {t('equipmentCard.contact')}
           </Button>
         </div>
       </CardContent>

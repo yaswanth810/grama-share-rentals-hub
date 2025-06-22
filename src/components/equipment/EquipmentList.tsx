@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Tables } from '@/integrations/supabase/types';
+import { useLanguage } from '@/contexts/LanguageContext';
 import EquipmentCard from './EquipmentCard';
 import EquipmentFilters from './EquipmentFilters';
 import { Loader2 } from 'lucide-react';
@@ -48,6 +49,7 @@ interface EquipmentListProps {
 }
 
 const EquipmentList: React.FC<EquipmentListProps> = ({ onViewDetails, onContact }) => {
+  const { t } = useLanguage();
   const [listings, setListings] = useState<SimpleListing[]>([]);
   const [filteredListings, setFilteredListings] = useState<SimpleListing[]>([]);
   const [loading, setLoading] = useState(true);
@@ -151,10 +153,10 @@ const EquipmentList: React.FC<EquipmentListProps> = ({ onViewDetails, onContact 
     <div className="space-y-4 md:space-y-6">
       <div className="text-center">
         <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
-          🌾 Equipment Rental Marketplace
+          {t('equipmentList.title')}
         </h1>
         <p className="text-sm md:text-base text-gray-600 px-4">
-          Find and rent agricultural and construction equipment from your community
+          {t('equipmentList.subtitle')}
         </p>
       </div>
 
@@ -174,7 +176,7 @@ const EquipmentList: React.FC<EquipmentListProps> = ({ onViewDetails, onContact 
       {/* Results Count */}
       <div className="flex items-center justify-between px-1">
         <p className="text-sm text-gray-600">
-          {filteredListings.length} equipment{filteredListings.length !== 1 ? 's' : ''} available
+          {filteredListings.length} {filteredListings.length === 1 ? t('equipmentList.equipmentAvailable') : t('equipmentList.equipmentsAvailable')}
         </p>
       </div>
 
@@ -194,10 +196,10 @@ const EquipmentList: React.FC<EquipmentListProps> = ({ onViewDetails, onContact 
         <div className="text-center py-12">
           <div className="text-4xl md:text-6xl mb-4">🔍</div>
           <h3 className="text-lg md:text-xl font-medium text-gray-900 mb-2">
-            No equipment found
+            {t('equipmentList.noEquipmentFound')}
           </h3>
           <p className="text-sm md:text-base text-gray-500 max-w-md mx-auto px-4">
-            Try adjusting your filters or check back later for new listings.
+            {t('equipmentList.tryAdjustingFilters')}
           </p>
         </div>
       )}

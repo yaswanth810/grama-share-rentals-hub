@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { MapPin, Star, Calendar, Shield, ArrowLeft, MessageCircle, Phone, CalendarCheck } from 'lucide-react';
 import { Tables } from '@/integrations/supabase/types';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 type Listing = Tables<'listings'> & {
   profiles: Tables<'profiles'>;
@@ -20,6 +21,8 @@ interface ListingDetailsProps {
 }
 
 const ListingDetails: React.FC<ListingDetailsProps> = ({ listing, onBack, onContact, onBooking }) => {
+  const { t } = useLanguage();
+
   const getConditionColor = (condition: string) => {
     switch (condition) {
       case 'excellent': return 'bg-green-100 text-green-800';
@@ -37,6 +40,11 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({ listing, onBack, onCont
     }).format(amount);
   };
 
+  // Get the first image or fallback to category icon
+  const displayImage = listing.images && listing.images.length > 0 
+    ? listing.images[0] 
+    : null;
+
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       <Button 
@@ -45,7 +53,7 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({ listing, onBack, onCont
         className="flex items-center space-x-2"
       >
         <ArrowLeft className="h-4 w-4" />
-        <span>Back to listings</span>
+        <span>{t('addListing.backToListings')}</span>
       </Button>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -54,8 +62,34 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({ listing, onBack, onCont
           {/* Image Gallery */}
           <Card>
             <CardContent className="p-0">
-              <div className="h-64 md:h-80 bg-gradient-to-br from-green-100 to-amber-100 flex items-center justify-center rounded-t-lg">
-                <span className="text-6xl">{listing.categories?.icon || '📦'}</span>
+              <div className="h-64 md:h-80 bg-gray-100 flex items-center justify-center rounded-t-lg overflow-hidden">
+                {displayImage ? (
+                  <img
+                    src={displayImage}
+                    alt={listing.title}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      // Fallback to category icon if image fails to load
+                      const target = e.target as HTMLImageElement;
+                      target.style.display = 'none';
+                      const fallback = target.parentElement?.querySelector('.fallback-content');
+                      if (fallback) {
+                        (fallback as HTMLElement).style.display = 'flex';
+                      }
+                    }}
+                  />
+                ) : null}
+                <div 
+                  className={`flex flex-col items-center justify-center text-gray-400 ${displayImage ? 'hidden' : ''} fallback-content`}
+                  style={{ display: displayImage ? 'none' : 'flex' }}
+                >
+                  <span className="text-6xl mb-2">
+                    {listing.categories?.icon || '📦'}
+                  </span>
+                  <span className="text-sm text-center px-2">
+                    {listing.categories?.name}
+                  </span>
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -89,17 +123,17 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({ listing, onBack, onCont
           {/* Rental Terms */}
           <Card>
             <CardHeader>
-              <CardTitle>Rental Terms</CardTitle>
+              <CardTitle>{t('addListing.rentalTerms')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Minimum Rental</p>
-                  <p className="text-lg">{listing.min_rental_days} day{listing.min_rental_days !== 1 ? 's' : ''}</p>
+                  <p className="text-sm font-medium text-gray-600">{t('addListing.minRentalDays')}</p>
+                  <p className="text-lg">{listing.min_rental_days} {t('equipmentCard.day')}{listing.min_rental_days !== 1 ? 's' : ''}</p>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Maximum Rental</p>
-                  <p className="text-lg">{listing.max_rental_days} day{listing.max_rental_days !== 1 ? 's' : ''}</p>
+                  <p className="text-sm font-medium text-gray-600">{t('addListing.maxRentalDays')}</p>
+                  <p className="text-lg">{listing.max_rental_days} {t('equipmentCard.day')}{listing.max_rental_days !== 1 ? 's' : ''}</p>
                 </div>
               </div>
               
@@ -107,14 +141,14 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({ listing, onBack, onCont
                 <div className="flex items-center space-x-2 p-3 bg-blue-50 rounded-lg">
                   <Shield className="h-4 w-4 text-blue-600" />
                   <span className="text-sm text-blue-700">
-                    Security deposit: {formatCurrency(listing.security_deposit)}
+                    {t('addListing.securityDeposit')}: {formatCurrency(listing.security_deposit)}
                   </span>
                 </div>
               )}
 
               {listing.pickup_delivery_options && listing.pickup_delivery_options.length > 0 && (
                 <div>
-                  <p className="text-sm font-medium text-gray-600 mb-2">Pickup/Delivery Options</p>
+                  <p className="text-sm font-medium text-gray-600 mb-2">{t('addListing.pickupOptions')}</p>
                   <div className="flex flex-wrap gap-2">
                     {listing.pickup_delivery_options.map((option, index) => (
                       <Badge key={index} variant="secondary">{option}</Badge>
@@ -131,14 +165,14 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({ listing, onBack, onCont
           {/* Pricing */}
           <Card>
             <CardHeader>
-              <CardTitle>Pricing</CardTitle>
+              <CardTitle>{t('addListing.pricing')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="text-center">
                 <p className="text-3xl font-bold text-green-600">
                   {formatCurrency(listing.daily_rate)}
                 </p>
-                <p className="text-sm text-gray-600">per day</p>
+                <p className="text-sm text-gray-600">{t('equipmentCard.day')}</p>
               </div>
               
               {listing.weekly_rate && (
@@ -148,7 +182,7 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({ listing, onBack, onCont
                     <p className="text-xl font-semibold text-gray-800">
                       {formatCurrency(listing.weekly_rate)}
                     </p>
-                    <p className="text-sm text-gray-600">per week</p>
+                    <p className="text-sm text-gray-600">{t('equipmentCard.week')}</p>
                   </div>
                 </>
               )}
@@ -188,7 +222,7 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({ listing, onBack, onCont
               <div className="flex items-center space-x-1">
                 <Star className="h-4 w-4 text-yellow-500" />
                 <span className="font-medium">
-                  {listing.profiles?.rating ? listing.profiles.rating.toFixed(1) : 'New'}
+                  {listing.profiles?.rating ? listing.profiles.rating.toFixed(1) : t('equipmentCard.new')}
                 </span>
                 {listing.profiles?.total_ratings && listing.profiles.total_ratings > 0 && (
                   <span className="text-sm text-gray-600">
@@ -227,7 +261,7 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({ listing, onBack, onCont
                 className="w-full"
               >
                 <MessageCircle className="h-4 w-4 mr-2" />
-                Contact Owner
+                {t('equipmentCard.contact')} Owner
               </Button>
               
               {listing.profiles?.phone && (

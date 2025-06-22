@@ -1,6 +1,8 @@
+
 import React, { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useMessages } from '@/contexts/MessageContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -17,12 +19,13 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = ({ currentView, onViewChange }) => {
   const { user, signOut } = useAuth();
   const { hasUnreadMessages } = useMessages();
+  const { t } = useLanguage();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navItems = [
-    { id: 'home', label: 'Browse Equipment' },
-    { id: 'my-listings', label: 'My Listings' },
-    { id: 'bookings', label: 'My Bookings' },
+    { id: 'home', label: t('header.browse') },
+    { id: 'my-listings', label: t('header.myListings') },
+    { id: 'bookings', label: t('header.myBookings') },
   ];
 
   const handleNavClick = (view: string) => {
@@ -40,7 +43,7 @@ const Header: React.FC<HeaderProps> = ({ currentView, onViewChange }) => {
               className="text-lg md:text-xl font-bold text-green-800 cursor-pointer"
               onClick={() => onViewChange('home')}
             >
-              🌾 Grama Rental
+              {t('header.title')}
             </h1>
           </div>
           
@@ -69,7 +72,7 @@ const Header: React.FC<HeaderProps> = ({ currentView, onViewChange }) => {
               size="sm"
             >
               <Plus className="h-4 w-4 mr-2" />
-              Add Listing
+              {t('header.addListing')}
             </Button>
             
             <Button
@@ -100,11 +103,11 @@ const Header: React.FC<HeaderProps> = ({ currentView, onViewChange }) => {
               <DropdownMenuContent align="end">
                 <DropdownMenuItem onClick={() => onViewChange('profile')}>
                   <User className="mr-2 h-4 w-4" />
-                  Profile
+                  {t('header.profile')}
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={signOut}>
                   <LogOut className="mr-2 h-4 w-4" />
-                  Sign out
+                  {t('header.signOut')}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -139,7 +142,7 @@ const Header: React.FC<HeaderProps> = ({ currentView, onViewChange }) => {
                 <div className="flex flex-col h-full">
                   {/* Header */}
                   <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-lg font-semibold">Menu</h2>
+                    <h2 className="text-lg font-semibold">{t('header.menu')}</h2>
                     <Button 
                       variant="ghost" 
                       size="sm" 
@@ -189,7 +192,7 @@ const Header: React.FC<HeaderProps> = ({ currentView, onViewChange }) => {
                       }`}
                     >
                       <User className="inline mr-2 h-4 w-4" />
-                      Profile
+                      {t('header.profile')}
                     </button>
                   </nav>
 
@@ -200,7 +203,7 @@ const Header: React.FC<HeaderProps> = ({ currentView, onViewChange }) => {
                       className="w-full bg-green-600 hover:bg-green-700"
                     >
                       <Plus className="h-4 w-4 mr-2" />
-                      Add Listing
+                      {t('header.addListing')}
                     </Button>
                     
                     <Button
@@ -209,7 +212,7 @@ const Header: React.FC<HeaderProps> = ({ currentView, onViewChange }) => {
                       className="w-full"
                     >
                       <LogOut className="h-4 w-4 mr-2" />
-                      Sign out
+                      {t('header.signOut')}
                     </Button>
                   </div>
                 </div>
