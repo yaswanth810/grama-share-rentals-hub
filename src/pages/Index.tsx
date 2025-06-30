@@ -2,7 +2,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import AuthPage from '@/components/auth/AuthPage';
-import Header from '@/components/layout/Header';
 import EquipmentList from '@/components/equipment/EquipmentList';
 import ListingDetails from '@/components/equipment/ListingDetails';
 import ContactOwner from '@/components/equipment/ContactOwner';
@@ -165,7 +164,6 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-amber-50">
-      <Header currentView={currentView} onViewChange={setCurrentView} />
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-8">
         {renderCurrentView()}
       </main>

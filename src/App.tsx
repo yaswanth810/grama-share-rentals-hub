@@ -10,12 +10,9 @@ import { NotificationProvider } from '@/contexts/NotificationContext';
 import Header from '@/components/layout/Header';
 import Index from '@/pages/Index';
 import AuthPage from '@/components/auth/AuthPage';
-import AddListing from '@/components/equipment/AddListing';
-import MyListings from '@/components/equipment/MyListings';
-import ListingDetails from '@/components/equipment/ListingDetails';
+import Dashboard from '@/components/dashboard/Dashboard';
 import BookingRequests from '@/components/booking/BookingRequests';
 import MyBookings from '@/components/booking/MyBookings';
-import Dashboard from '@/components/dashboard/Dashboard';
 import UserProfile from '@/components/profile/UserProfile';
 import MessagingSystem from '@/components/messaging/MessagingSystem';
 import NotFound from '@/pages/NotFound';
@@ -38,9 +35,6 @@ function App() {
                       <Route path="/" element={<Index />} />
                       <Route path="/auth" element={<AuthPage />} />
                       <Route path="/dashboard" element={<Dashboard />} />
-                      <Route path="/add-listing" element={<AddListing />} />
-                      <Route path="/my-listings" element={<MyListings />} />
-                      <Route path="/listing/:id" element={<ListingDetails />} />
                       <Route path="/booking-requests" element={<BookingRequests />} />
                       <Route path="/my-bookings" element={<MyBookings />} />
                       <Route path="/profile" element={<UserProfile />} />

@@ -1,77 +1,69 @@
 
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Calendar, MapPin, Clock, User, Phone } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
-import { toast } from '@/hooks/use-toast';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { Tables } from '@/integrations/supabase/types';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { toast } from '@/hooks/use-toast';
+import { Loader2, MapPin, Calendar, Star, MessageCircle } from 'lucide-react';
 
-type BookingWithDetails = Tables<'bookings'> & {
-  listings: {
-    id: string;
-    title: string;
-    daily_rate: number;
-    location_village: string;
-    location_district: string;
-    images: string[] | null;
-  };
-  profiles: {
-    id: string;
-    full_name: string;
-    phone: string | null;
-    village: string;
-    district: string;
+type Booking = Tables<'bookings'> & {
+  listings: Tables<'listings'> & {
+    profiles: Tables<'profiles'>;
+    categories: Tables<'categories'>;
   };
 };
 
 const MyBookings: React.FC = () => {
   const { user } = useAuth();
-  const [bookings, setBookings] = useState<BookingWithDetails[]>([]);
+  const { t } = useLanguage();
+  const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (user) {
-      fetchMyBookings();
-    }
+    fetchMyBookings();
   }, [user]);
 
   const fetchMyBookings = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('bookings')
-        .select(`
+    if (!user) return;
+    
+    setLoading(true);
+    const { data, error } = await supabase
+      .from('bookings')
+      .select(`
+        *,
+        listings (
           *,
-          listings!inner (
-            id,
-            title,
-            daily_rate,
-            location_village,
-            location_district,
-            images
-          ),
-          profiles!bookings_owner_id_fkey (
-            id,
-            full_name,
-            phone,
-            village,
-            district
-          )
-        `)
-        .eq('renter_id', user!.id)
-        .order('created_at', { ascending: false });
+          profiles (*),
+          categories (*)
+        )
+      `)
+      .eq('renter_id', user.id)
+      .order('created_at', { ascending: false });
 
-      if (error) throw error;
-      setBookings(data || []);
-    } catch (error) {
+    if (error) {
+      console.error('Error fetching bookings:', error);
       toast({
         title: "Error",
         description: "Failed to fetch your bookings",
         variant: "destructive"
       });
-    } finally {
-      setLoading(false);
+    } else {
+      setBookings(data || []);
+    }
+    setLoading(false);
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'pending': return 'bg-yellow-100 text-yellow-800';
+      case 'approved': return 'bg-green-100 text-green-800';
+      case 'rejected': return 'bg-red-100 text-red-800';
+      case 'completed': return 'bg-blue-100 text-blue-800';
+      default: return 'bg-gray-100 text-gray-800';
     }
   };
 
@@ -83,144 +75,146 @@ const MyBookings: React.FC = () => {
     }).format(amount);
   };
 
-  const getStatusBadge = (status: string) => {
-    const statusConfig = {
-      pending: { variant: 'secondary' as const, label: 'Pending' },
-      confirmed: { variant: 'default' as const, label: 'Confirmed' },
-      cancelled: { variant: 'destructive' as const, label: 'Cancelled' },
-      active: { variant: 'default' as const, label: 'Active' },
-      completed: { variant: 'outline' as const, label: 'Completed' }
-    };
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-IN');
+  };
 
-    const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.pending;
-    return <Badge variant={config.variant}>{config.label}</Badge>;
+  const calculateDuration = (startDate: string, endDate: string) => {
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    const diffTime = Math.abs(end.getTime() - start.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays;
   };
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
+      <div className="flex justify-center items-center h-64">
+        <Loader2 className="h-8 w-8 animate-spin text-green-600" />
       </div>
     );
   }
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-800">My Bookings</h1>
-        <Badge variant="outline" className="text-sm">
-          {bookings.length} Total
-        </Badge>
+      <div className="flex justify-between items-center">
+        <h2 className="text-2xl font-bold text-gray-800">My Bookings</h2>
+        <p className="text-gray-600">{bookings.length} booking{bookings.length !== 1 ? 's' : ''}</p>
       </div>
 
       {bookings.length === 0 ? (
         <Card>
           <CardContent className="py-12 text-center">
-            <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No Bookings Yet</h3>
-            <p className="text-gray-600">
-              You haven't made any bookings yet. Browse equipment and make your first rental!
-            </p>
+            <p className="text-gray-500 text-lg">You haven't made any bookings yet.</p>
+            <p className="text-gray-400 text-sm mt-2">Start exploring equipment to rent!</p>
           </CardContent>
         </Card>
       ) : (
-        <div className="grid gap-6">
-          {bookings.map((booking) => (
-            <Card key={booking.id}>
-              <CardHeader>
-                <div className="flex items-start justify-between">
-                  <div className="flex space-x-4">
-                    {/* Equipment Image */}
-                    <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden">
-                      {booking.listings.images && booking.listings.images.length > 0 ? (
-                        <img
-                          src={booking.listings.images[0]}
-                          alt={booking.listings.title}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <span className="text-2xl">📦</span>
-                      )}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {bookings.map((booking) => {
+            const listing = booking.listings;
+            const duration = calculateDuration(booking.start_date, booking.end_date);
+            const totalAmount = booking.total_amount || (listing.daily_rate * duration);
+
+            return (
+              <Card key={booking.id} className="hover:shadow-lg transition-shadow">
+                <CardHeader>
+                  <div className="flex justify-between items-start">
+                    <CardTitle className="text-lg">{listing.title}</CardTitle>
+                    <Badge className={getStatusColor(booking.status)}>
+                      {booking.status}
+                    </Badge>
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="h-40 bg-gray-100 flex items-center justify-center rounded-lg overflow-hidden">
+                    {listing.images && listing.images.length > 0 ? (
+                      <img
+                        src={listing.images[0]}
+                        alt={listing.title}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="flex flex-col items-center justify-center text-gray-400">
+                        <span className="text-4xl mb-2">
+                          {listing.categories?.icon || '📦'}
+                        </span>
+                        <span className="text-sm text-center px-2">
+                          {listing.categories?.name}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <div className="flex items-center space-x-1 text-sm text-gray-600">
+                      <span>{listing.categories?.icon}</span>
+                      <span>{listing.categories?.name}</span>
                     </div>
+                    <div className="flex items-center space-x-1 text-sm text-gray-600">
+                      <MapPin className="h-3 w-3" />
+                      <span>{listing.location_village}, {listing.location_district}</span>
+                    </div>
+                    <div className="flex items-center space-x-1 text-sm text-gray-600">
+                      <Calendar className="h-3 w-3" />
+                      <span>{formatDate(booking.start_date)} - {formatDate(booking.end_date)}</span>
+                    </div>
+                    <div className="text-sm text-gray-600">
+                      <span>Duration: {duration} day{duration !== 1 ? 's' : ''}</span>
+                    </div>
+                  </div>
+
+                  <div className="flex justify-between items-center">
                     <div>
-                      <CardTitle className="text-lg">{booking.listings.title}</CardTitle>
-                      <div className="flex items-center space-x-4 text-sm text-gray-600 mt-2">
-                        <div className="flex items-center space-x-1">
-                          <User className="h-4 w-4" />
-                          <span>{booking.profiles?.full_name}</span>
-                        </div>
-                        <div className="flex items-center space-x-1">
-                          <MapPin className="h-4 w-4" />
-                          <span>{booking.listings.location_village}, {booking.listings.location_district}</span>
-                        </div>
-                        <div className="flex items-center space-x-1">
-                          <Clock className="h-4 w-4" />
-                          <span>{new Date(booking.created_at).toLocaleDateString()}</span>
-                        </div>
+                      <p className="text-lg font-bold text-green-600">
+                        {formatCurrency(totalAmount)}
+                      </p>
+                      <p className="text-xs text-gray-500">Total Amount</p>
+                    </div>
+                    <div className="text-right">
+                      <div className="flex items-center space-x-1 text-sm">
+                        <Star className="h-3 w-3 text-yellow-500" />
+                        <span>{listing.profiles?.rating ? listing.profiles.rating.toFixed(1) : 'New'}</span>
                       </div>
+                      <p className="text-xs text-gray-500">{listing.profiles?.full_name}</p>
                     </div>
                   </div>
-                  {getStatusBadge(booking.status || 'pending')}
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {/* Booking Details */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div>
-                    <label className="text-sm font-medium text-gray-600">Rental Period</label>
-                    <p className="text-sm">
-                      {new Date(booking.start_date).toLocaleDateString()} - {new Date(booking.end_date).toLocaleDateString()}
-                    </p>
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium text-gray-600">Pickup Method</label>
-                    <p className="text-sm capitalize">{booking.pickup_method || 'Not specified'}</p>
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium text-gray-600">Total Amount</label>
-                    <p className="text-sm font-semibold text-green-600">
-                      {formatCurrency(booking.total_amount)}
-                    </p>
-                  </div>
-                </div>
 
-                {/* Owner Contact - Only show for confirmed bookings */}
-                {booking.status === 'confirmed' && (
-                  <div className="bg-green-50 p-4 rounded-lg">
-                    <h4 className="font-medium text-green-900 mb-2">Owner Contact</h4>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
-                      <div>
-                        <span className="text-green-700">Name:</span> {booking.profiles?.full_name}
-                      </div>
-                      {booking.profiles?.phone && (
-                        <div className="flex items-center space-x-1">
-                          <Phone className="h-4 w-4 text-green-700" />
-                          <span className="text-green-700">Phone:</span> {booking.profiles.phone}
-                        </div>
-                      )}
+                  {booking.notes && (
+                    <div className="bg-gray-50 p-3 rounded-lg">
+                      <p className="text-sm text-gray-700">
+                        <strong>Your Note:</strong> {booking.notes}
+                      </p>
                     </div>
-                  </div>
-                )}
+                  )}
 
-                {/* Status Messages */}
-                {booking.status === 'pending' && (
-                  <div className="text-center py-2">
-                    <p className="text-sm text-yellow-600 font-medium">
-                      ⏳ Waiting for owner approval
-                    </p>
+                  <div className="flex space-x-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="flex-1"
+                    >
+                      <MessageCircle className="h-4 w-4 mr-1" />
+                      Contact Owner
+                    </Button>
+                    {booking.status === 'approved' && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="flex-1"
+                      >
+                        View Details
+                      </Button>
+                    )}
                   </div>
-                )}
 
-                {booking.status === 'cancelled' && (
-                  <div className="text-center py-2">
-                    <p className="text-sm text-red-600 font-medium">
-                      ✗ This booking was cancelled
-                    </p>
+                  <div className="text-xs text-gray-500 text-center">
+                    Booked on {formatDate(booking.created_at)}
                   </div>
-                )}
-              </CardContent>
-            </Card>
-          ))}
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
       )}
     </div>
