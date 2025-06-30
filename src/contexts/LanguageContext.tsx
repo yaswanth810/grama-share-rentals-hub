@@ -1,171 +1,294 @@
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, ReactNode } from 'react';
+
+type Language = 'en' | 'hi' | 'ta' | 'te';
 
 interface LanguageContextType {
-  language: 'en' | 'te';
-  setLanguage: (lang: 'en' | 'te') => void;
+  language: Language;
+  setLanguage: (lang: Language) => void;
   t: (key: string) => string;
 }
 
-const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
-
-// Translation dictionary
 const translations = {
   en: {
-    // Header
-    'header.title': '🌾 Grama Rental',
-    'header.browse': 'Browse Equipment',
+    // Header translations
+    'header.title': 'Equipment Rental',
+    'header.browse': 'Browse',
+    'header.dashboard': 'Dashboard',
     'header.myListings': 'My Listings',
+    'header.bookingRequests': 'Booking Requests',
     'header.myBookings': 'My Bookings',
+    'header.messages': 'Messages',
     'header.addListing': 'Add Listing',
     'header.profile': 'Profile',
-    'header.signOut': 'Sign out',
-    'header.menu': 'Menu',
+    'header.signOut': 'Sign Out',
+    'header.signIn': 'Sign In',
     
-    // Equipment List
-    'equipmentList.title': '🌾 Equipment Rental Marketplace',
-    'equipmentList.subtitle': 'Find and rent agricultural and construction equipment from your community',
-    'equipmentList.equipmentAvailable': 'equipment available',
-    'equipmentList.equipmentsAvailable': 'equipments available',
-    'equipmentList.noEquipmentFound': 'No equipment found',
-    'equipmentList.tryAdjustingFilters': 'Try adjusting your filters or check back later for new listings.',
-    
-    // Equipment Card
-    'equipmentCard.viewDetails': 'View Details',
-    'equipmentCard.contact': 'Contact',
+    // Equipment card translations
+    'equipmentCard.new': 'New',
     'equipmentCard.day': '/day',
     'equipmentCard.week': '/week',
     'equipmentCard.days': 'days',
-    'equipmentCard.new': 'New',
+    'equipmentCard.viewDetails': 'View Details',
+    'equipmentCard.contact': 'Contact',
     
-    // Add Listing
-    'addListing.title': 'Add New Equipment Listing',
-    'addListing.editTitle': 'Edit Equipment Listing',
-    'addListing.subtitle': 'List your equipment for rent and start earning from your unused items.',
-    'addListing.editSubtitle': 'Update your equipment details and pricing.',
-    'addListing.backToListings': 'Back to listings',
-    'addListing.basicInfo': 'Basic Information',
-    'addListing.equipmentTitle': 'Equipment Title',
-    'addListing.description': 'Description',
-    'addListing.category': 'Category',
-    'addListing.condition': 'Condition',
-    'addListing.pricing': 'Pricing',
-    'addListing.dailyRate': 'Daily Rate (₹)',
-    'addListing.securityDeposit': 'Security Deposit (₹)',
-    'addListing.weeklyRate': 'Weekly Rate (₹)',
-    'addListing.monthlyRate': 'Monthly Rate (₹)',
-    'addListing.location': 'Location',
-    'addListing.village': 'Village',
-    'addListing.district': 'District',
-    'addListing.state': 'State',
-    'addListing.rentalTerms': 'Rental Terms',
-    'addListing.minRentalDays': 'Minimum Rental Days',
-    'addListing.maxRentalDays': 'Maximum Rental Days',
-    'addListing.pickupOptions': 'Pickup/Delivery Options',
-    'addListing.createListing': 'Create Listing',
-    'addListing.updateListing': 'Update Listing',
-    'addListing.creating': 'Creating Listing...',
-    'addListing.updating': 'Updating Listing...',
+    // Equipment list translations
+    'equipmentList.searchPlaceholder': 'Search equipment...',
+    'equipmentList.allCategories': 'All Categories',
+    'equipmentList.allConditions': 'All Conditions',
+    'equipmentList.excellent': 'Excellent',
+    'equipmentList.good': 'Good',
+    'equipmentList.fair': 'Fair',
+    'equipmentList.sortBy': 'Sort by',
+    'equipmentList.newest': 'Newest',
+    'equipmentList.oldest': 'Oldest',
+    'equipmentList.priceLowHigh': 'Price: Low to High',
+    'equipmentList.priceHighLow': 'Price: High to Low',
+    'equipmentList.noResults': 'No equipment found',
+    'equipmentList.noResultsDesc': 'Try adjusting your search or filters',
     
-    // Common
-    'common.loading': 'Loading...',
-    'common.excellent': 'Excellent',
-    'common.good': 'Good',
-    'common.fair': 'Fair',
-    'common.selectCategory': 'Select category',
-    'common.selectCondition': 'Select condition',
+    // Listing details translations
+    'listingDetails.day': '/day',
+    'listingDetails.week': '/week',
+    'listingDetails.month': '/month',
+    'listingDetails.securityDeposit': 'Security Deposit',
+    'listingDetails.rentalPeriod': 'Rental Period',
+    'listingDetails.days': 'days',
+    'listingDetails.pickupOptions': 'Pickup/Delivery Options',
+    'listingDetails.pickup': 'Pickup',
+    'listingDetails.delivery': 'Delivery',
+    'listingDetails.ownerInfo': 'Owner Information',
+    'listingDetails.rating': 'Rating',
+    'listingDetails.totalRatings': 'total ratings',
+    'listingDetails.newUser': 'New User',
+    'listingDetails.bookNow': 'Book Now',
+    'listingDetails.contactOwner': 'Contact Owner',
+    'listingDetails.description': 'Description',
+    'listingDetails.condition': 'Condition',
+    'listingDetails.location': 'Location',
+    
+    // My listings translations
+    'myListings.title': 'My Listings',
+    'myListings.addNew': 'Add New Listing',
+    'myListings.noListings': 'No Listings Yet',
+    'myListings.noListingsDesc': 'Start by adding your first equipment listing',
+    'myListings.available': 'Available',
+    'myListings.rented': 'Rented',
+    'myListings.maintenance': 'Maintenance',
+    'myListings.edit': 'Edit',
+    'myListings.delete': 'Delete',
+    'myListings.views': 'views',
+  },
+  hi: {
+    // Header translations
+    'header.title': 'उपकरण किराया',
+    'header.browse': 'ब्राउज़ करें',
+    'header.dashboard': 'डैशबोर्ड',
+    'header.myListings': 'मेरी लिस्टिंग',
+    'header.bookingRequests': 'बुकिंग अनुरोध',
+    'header.myBookings': 'मेरी बुकिंग',
+    'header.messages': 'संदेश',
+    'header.addListing': 'लिस्टिंग जोड़ें',
+    'header.profile': 'प्रोफ़ाइल',
+    'header.signOut': 'साइन आउट',
+    'header.signIn': 'साइन इन',
+    
+    // Equipment card translations
+    'equipmentCard.new': 'नया',
+    'equipmentCard.day': '/दिन',
+    'equipmentCard.week': '/सप्ताह',
+    'equipmentCard.days': 'दिन',
+    'equipmentCard.viewDetails': 'विवरण देखें',
+    'equipmentCard.contact': 'संपर्क करें',
+    
+    // Equipment list translations
+    'equipmentList.searchPlaceholder': 'उपकरण खोजें...',
+    'equipmentList.allCategories': 'सभी श्रेणियां',
+    'equipmentList.allConditions': 'सभी स्थितियां',
+    'equipmentList.excellent': 'उत्कृष्ट',
+    'equipmentList.good': 'अच्छा',
+    'equipmentList.fair': 'ठीक',
+    'equipmentList.sortBy': 'क्रमबद्ध करें',
+    'equipmentList.newest': 'नवीनतम',
+    'equipmentList.oldest': 'पुराना',
+    'equipmentList.priceLowHigh': 'कीमत: कम से अधिक',
+    'equipmentList.priceHighLow': 'कीमत: अधिक से कम',
+    'equipmentList.noResults': 'कोई उपकरण नहीं मिला',
+    'equipmentList.noResultsDesc': 'अपनी खोज या फ़िल्टर समायोजित करने का प्रयास करें',
+    
+    // Listing details translations
+    'listingDetails.day': '/दिन',
+    'listingDetails.week': '/सप्ताह',
+    'listingDetails.month': '/महीना',
+    'listingDetails.securityDeposit': 'सिक्यूरिटी डिपॉज़िट',
+    'listingDetails.rentalPeriod': 'किराये की अवधि',
+    'listingDetails.days': 'दिन',
+    'listingDetails.pickupOptions': 'पिकअप/डिलीवरी विकल्प',
+    'listingDetails.pickup': 'पिकअप',
+    'listingDetails.delivery': 'डिलीवरी',
+    'listingDetails.ownerInfo': 'मालिक की जानकारी',
+    'listingDetails.rating': 'रेटिंग',
+    'listingDetails.totalRatings': 'कुल रेटिंग',
+    'listingDetails.newUser': 'नया उपयोगकर्ता',
+    'listingDetails.bookNow': 'अभी बुक करें',
+    'listingDetails.contactOwner': 'मालिक से संपर्क करें',
+    'listingDetails.description': 'विवरण',
+    'listingDetails.condition': 'स्थिति',
+    'listingDetails.location': 'स्थान',
+    
+    // My listings translations
+    'myListings.title': 'मेरी लिस्टिंग',
+    'myListings.addNew': 'नई लिस्टिंग जोड़ें',
+    'myListings.noListings': 'अभी तक कोई लिस्टिंग नहीं',
+    'myListings.noListingsDesc': 'अपनी पहली उपकरण लिस्टिंग जोड़कर शुरू करें',
+    'myListings.available': 'उपलब्ध',
+    'myListings.rented': 'किराए पर',
+    'myListings.maintenance': 'रखरखाव',
+    'myListings.edit': 'संपादित करें',
+    'myListings.delete': 'हटाएं',
+    'myListings.views': 'दृश्य',
+  },
+  ta: {
+    // Header translations
+    'header.title': 'உபகரண வாடகை',
+    'header.browse': 'உலாவு',
+    'header.dashboard': 'டாஷ்போர்டு',
+    'header.myListings': 'என் பட்டியல்கள்',
+    'header.bookingRequests': 'முன்பதிவு கோரிக்கைகள்',
+    'header.myBookings': 'என் முன்பதிவுகள்',
+    'header.messages': 'செய்திகள்',
+    'header.addListing': 'பட்டியல் சேர்க்கவும்',
+    'header.profile': 'சுயவிவரம்',
+    'header.signOut': 'வெளியேறு',
+    'header.signIn': 'உள்நுழையவும்',
+    
+    // Equipment card translations
+    'equipmentCard.new': 'புதிய',
+    'equipmentCard.day': '/நாள்',
+    'equipmentCard.week': '/வாரம்',
+    'equipmentCard.days': 'நாட்கள்',
+    'equipmentCard.viewDetails': 'விவரங்களைக் காண்க',
+    'equipmentCard.contact': 'தொடர்பு',
+    
+    // Equipment list translations
+    'equipmentList.searchPlaceholder': 'உபகரணங்களைத் தேடுங்கள்...',
+    'equipmentList.allCategories': 'அனைத்து வகைகள்',
+    'equipmentList.allConditions': 'அனைத்து நிலைமைகள்',
+    'equipmentList.excellent': 'சிறந்த',
+    'equipmentList.good': 'நல்ல',
+    'equipmentList.fair': 'சரியான',
+    'equipmentList.sortBy': 'வரிசைப்படுத்து',
+    'equipmentList.newest': 'புதியது',
+    'equipmentList.oldest': 'பழையது',
+    'equipmentList.priceLowHigh': 'விலை: குறைந்த இருந்து அதிக',
+    'equipmentList.priceHighLow': 'விலை: அதிக இருந்து குறைந்த',
+    'equipmentList.noResults': 'உபகரணம் கிடைக்கவில்லை',
+    'equipmentList.noResultsDesc': 'உங்கள் தேடல் அல்லது வடிகட்டிகளை சரிசெய்ய முயற்சிக்கவும்',
+    
+    // Listing details translations
+    'listingDetails.day': '/நாள்',
+    'listingDetails.week': '/வாரம்',
+    'listingDetails.month': '/மாதம்',
+    'listingDetails.securityDeposit': 'பாதுகாப்பு வைப்பு',
+    'listingDetails.rentalPeriod': 'வாடகை காலம்',
+    'listingDetails.days': 'நாட்கள்',
+    'listingDetails.pickupOptions': 'எடுக்கும்/விநியோக விकल்பங்கள்',
+    'listingDetails.pickup': 'எடுக்கும்',
+    'listingDetails.delivery': 'விநியோகம்',
+    'listingDetails.ownerInfo': 'உரிமையாளர் தகவல்',
+    'listingDetails.rating': 'மதிப்பீடு',
+    'listingDetails.totalRatings': 'மொத்த மதிப்பீடுகள்',
+    'listingDetails.newUser': 'புதிய பயனர்',
+    'listingDetails.bookNow': 'இப்போது முன்பதிவு செய்யுங்கள்',
+    'listingDetails.contactOwner': 'உரிமையாளரைத் தொடர்பு கொள்ளுங்கள்',
+    'listingDetails.description': 'விளக்கம்',
+    'listingDetails.condition': 'நிலைமை',
+    'listingDetails.location': 'இடம்',
+    
+    // My listings translations
+    'myListings.title': 'என் பட்டியல்கள்',
+    'myListings.addNew': 'புதிய பட்டியல் சேர்க்கவும்',
+    'myListings.noListings': 'இன்னும் பட்டியல்கள் இல்லை',
+    'myListings.noListingsDesc': 'உங்கள் முதல் உபகரண பட்டியலைச் சேர்ப்பதன் மூலம் தொடங்குங்கள்',
+    'myListings.available': 'கிடைக்கும்',
+    'myListings.rented': 'வாடகைக்கு',
+    'myListings.maintenance': 'பராமரிப்பு',
+    'myListings.edit': 'திருத்து',
+    'myListings.delete': 'நீக்கு',
+    'myListings.views': 'காட்சிகள்',
   },
   te: {
-    // Header (Telugu)
-    'header.title': '🌾 గ్రామ రెంటల్',
-    'header.browse': 'పరికరాలు చూడండి',
+    // Header translations
+    'header.title': 'పరికరాల అద్దె',
+    'header.browse': 'బ్రౌజ్ చేయండి',
+    'header.dashboard': 'డాష్‌బోర్డ్',
     'header.myListings': 'నా జాబితాలు',
-    'header.myBookings': 'నా బుకింగ్లు',
+    'header.bookingRequests': 'బుకింగ్ అభ్యర్థనలు',
+    'header.myBookings': 'నా బుకింగ్‌లు',
+    'header.messages': 'సందేశాలు',
     'header.addListing': 'జాబితా జోడించండి',
     'header.profile': 'ప్రొఫైల్',
     'header.signOut': 'సైన్ అవుట్',
-    'header.menu': 'మెనూ',
+    'header.signIn': 'సైన్ ఇన్',
     
-    // Equipment List (Telugu)
-    'equipmentList.title': '🌾 పరికరాల అద్దె మార్కెట్‌ప్లేస్',
-    'equipmentList.subtitle': 'మీ సమాజంలో వ్యవసాయ మరియు నిర్మాణ పరికరాలను కనుగొనండి మరియు అద్దెకు తీసుకోండి',
-    'equipmentList.equipmentAvailable': 'పరికరం అందుబాటులో ఉంది',
-    'equipmentList.equipmentsAvailable': 'పరికరాలు అందుబాటులో ఉన్నాయి',
-    'equipmentList.noEquipmentFound': 'పరికరాలు కనుగొనబడలేదు',
-    'equipmentList.tryAdjustingFilters': 'మీ ఫిల్టర్లను సర్దుబాటు చేయడానికి ప్రయత్నించండి లేదా కొత్త జాబితాల కోసం తర్వాత తనిఖీ చేయండి.',
-    
-    // Equipment Card (Telugu)
-    'equipmentCard.viewDetails': 'వివరాలు చూడండి',
-    'equipmentCard.contact': 'సంప్రదించండి',
+    // Equipment card translations
+    'equipmentCard.new': 'కొత్త',
     'equipmentCard.day': '/రోజు',
     'equipmentCard.week': '/వారం',
     'equipmentCard.days': 'రోజులు',
-    'equipmentCard.new': 'కొత్తది',
+    'equipmentCard.viewDetails': 'వివరాలు చూడండి',
+    'equipmentCard.contact': 'సంప్రదించండి',
     
-    // Add Listing (Telugu)
-    'addListing.title': 'కొత్త పరికర జాబితా జోడించండి',
-    'addListing.editTitle': 'పరికర జాబితాను సవరించండి',
-    'addListing.subtitle': 'మీ పరికరాలను అద్దెకు జాబితా చేయండి మరియు మీ ఉపయోగించని వస్తువుల నుండి సంపాదించడం ప్రారంభించండి.',
-    'addListing.editSubtitle': 'మీ పరికర వివరాలు మరియు ధరలను నవీకరించండి.',
-    'addListing.backToListings': 'జాబితాలకు తిరిగి వెళ్ళండి',
-    'addListing.basicInfo': 'ప్రాథమిక సమాచారం',
-    'addListing.equipmentTitle': 'పరికర శీర్షిక',
-    'addListing.description': 'వివరణ',
-    'addListing.category': 'వర్గం',
-    'addListing.condition': 'పరిస్థితి',
-    'addListing.pricing': 'ధర',
-    'addListing.dailyRate': 'రోజువారీ రేటు (₹)',
-    'addListing.securityDeposit': 'భద్రతా డిపాజిట్ (₹)',
-    'addListing.weeklyRate': 'వారపు రేటు (₹)',
-    'addListing.monthlyRate': 'నెలవారీ రేటు (₹)',
-    'addListing.location': 'స్థానం',
-    'addListing.village': 'గ్రామం',
-    'addListing.district': 'జిల్లా',
-    'addListing.state': 'రాష్ట్రం',
-    'addListing.rentalTerms': 'అద్దె నిబంధనలు',
-    'addListing.minRentalDays': 'కనీస అద్దె రోజులు',
-    'addListing.maxRentalDays': 'గరిష్ట అద్దె రోజులు',
-    'addListing.pickupOptions': 'పికప్/డెలివరీ ఎంపికలు',
-    'addListing.createListing': 'జాబితా సృష్టించండి',
-    'addListing.updateListing': 'జాబితాను నవీకరించండి',
-    'addListing.creating': 'జాబితా సృష్టిస్తోంది...',
-    'addListing.updating': 'జాబితాను నవీకరిస్తోంది...',
+    // Equipment list translations
+    'equipmentList.searchPlaceholder': 'పరికరాలను వెతకండి...',
+    'equipmentList.allCategories': 'అన్ని వర్గాలు',
+    'equipmentList.allConditions': 'అన్ని పరిస్థితులు',
+    'equipmentList.excellent': 'అద్భుతమైన',
+    'equipmentList.good': 'మంచి',
+    'equipmentList.fair': 'ఫెయిర్',
+    'equipmentList.sortBy': 'ఇలా క్రమబద్ధీకరించండి',
+    'equipmentList.newest': 'కొత్తది',
+    'equipmentList.oldest': 'పాతది',
+    'equipmentList.priceLowHigh': 'ధర: తక్కువ నుండి ఎక్కువ వరకు',
+    'equipmentList.priceHighLow': 'ధర: ఎక్కువ నుండి తక్కువ వరకు',
+    'equipmentList.noResults': 'పరికరం కనుగొనబడలేదు',
+    'equipmentList.noResultsDesc': 'మీ శోధన లేదా ఫిల్టర్‌లను సర్దుబాటు చేయడానికి ప్రయత్నించండి',
     
-    // Common (Telugu)
-    'common.loading': 'లోడ్ అవుతోంది...',
-    'common.excellent': 'అద్భుతమైన',
-    'common.good': 'మంచి',
-    'common.fair': 'సాధారణ',
-    'common.selectCategory': 'వర్గాన్ని ఎంచుకోండి',
-    'common.selectCondition': 'పరిస్థితిని ఎంచుకోండి',
-  }
+    // Listing details translations
+    'listingDetails.day': '/రోజు',
+    'listingDetails.week': '/వారం',
+    'listingDetails.month': '/నెల',
+    'listingDetails.securityDeposit': 'సెక్యూరిటీ డిపాజిట్',
+    'listingDetails.rentalPeriod': 'అద్దె కాలం',
+    'listingDetails.days': 'రోజులు',
+    'listingDetails.pickupOptions': 'పికప్/డెలివరీ ఎంపికలు',
+    'listingDetails.pickup': 'పికప్',
+    'listingDetails.delivery': 'డెలివరీ',
+    'listingDetails.ownerInfo': 'యజమాని సమాచారం',
+    'listingDetails.rating': 'రేటింగ్',
+    'listingDetails.totalRatings': 'మొత్తం రేటింగ్‌లు',
+    'listingDetails.newUser': 'కొత్త వినియోగదారు',
+    'listingDetails.bookNow': 'ఇప్పుడే బుక్ చేయండి',
+    'listingDetails.contactOwner': 'యజమానిని సంప్రదించండి',
+    'listingDetails.description': 'వివరణ',
+    'listingDetails.condition': 'పరిస్థితి',
+    'listingDetails.location': 'స్థానం',
+    
+    // My listings translations
+    'myListings.title': 'నా జాబితాలు',
+    'myListings.addNew': 'కొత్త జాబితా జోడించండి',
+    'myListings.noListings': 'ఇంకా జాబితాలు లేవు',
+    'myListings.noListingsDesc': 'మీ మొదటి పరికరాల జాబితాను జోడించడం ద్వారా ప్రారంభించండి',
+    'myListings.available': 'అందుబాటులో ఉంది',
+    'myListings.rented': 'అద్దెకు ఇవ్వబడింది',
+    'myListings.maintenance': 'నిర్వహణ',
+    'myListings.edit': 'సవరించండి',
+    'myListings.delete': 'తొలగించండి',
+    'myListings.views': 'వీక్షణలు',
+  },
 };
 
-export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [language, setLanguage] = useState<'en' | 'te'>('en');
-
-  useEffect(() => {
-    const savedLanguage = localStorage.getItem('language') as 'en' | 'te';
-    if (savedLanguage) {
-      setLanguage(savedLanguage);
-    }
-  }, []);
-
-  const handleSetLanguage = (lang: 'en' | 'te') => {
-    setLanguage(lang);
-    localStorage.setItem('language', lang);
-  };
-
-  const t = (key: string): string => {
-    return translations[language][key as keyof typeof translations['en']] || key;
-  };
-
-  return (
-    <LanguageContext.Provider value={{ language, setLanguage: handleSetLanguage, t }}>
-      {children}
-    </LanguageContext.Provider>
-  );
-};
+const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 export const useLanguage = () => {
   const context = useContext(LanguageContext);
@@ -173,4 +296,24 @@ export const useLanguage = () => {
     throw new Error('useLanguage must be used within a LanguageProvider');
   }
   return context;
+};
+
+export const LanguageProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const [language, setLanguage] = useState<Language>('en');
+
+  const t = (key: string): string => {
+    return translations[language][key as keyof typeof translations[typeof language]] || key;
+  };
+
+  const value = {
+    language,
+    setLanguage,
+    t,
+  };
+
+  return (
+    <LanguageContext.Provider value={value}>
+      {children}
+    </LanguageContext.Provider>
+  );
 };

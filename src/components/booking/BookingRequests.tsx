@@ -63,9 +63,13 @@ const BookingRequests: React.FC = () => {
         .eq('owner_id', user!.id)
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Fetch error:', error);
+        throw error;
+      }
       setBookings(data || []);
     } catch (error) {
+      console.error('Error fetching booking requests:', error);
       toast({
         title: "Error",
         description: "Failed to fetch booking requests",
@@ -76,27 +80,41 @@ const BookingRequests: React.FC = () => {
     }
   };
 
-  const updateBookingStatus = async (bookingId: string, status: 'approved' | 'rejected') => {
+  const updateBookingStatus = async (bookingId: string, status: 'confirmed' | 'cancelled') => {
     setProcessingId(bookingId);
     
     try {
-      const { error } = await supabase
+      console.log('Updating booking:', bookingId, 'to status:', status);
+      
+      const { data, error } = await supabase
         .from('bookings')
-        .update({ status })
-        .eq('id', bookingId);
+        .update({ 
+          status,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', bookingId)
+        .eq('owner_id', user!.id)
+        .select();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Update error:', error);
+        throw error;
+      }
+
+      console.log('Update result:', data);
 
       toast({
         title: "Success",
-        description: `Booking ${status} successfully`,
+        description: `Booking ${status === 'confirmed' ? 'approved' : 'rejected'} successfully`,
       });
 
-      fetchBookingRequests();
+      // Refresh the bookings list
+      await fetchBookingRequests();
     } catch (error) {
+      console.error('Error updating booking:', error);
       toast({
         title: "Error",
-        description: `Failed to ${status === 'approved' ? 'approve' : 'reject'} booking`,
+        description: `Failed to ${status === 'confirmed' ? 'approve' : 'reject'} booking. Please try again.`,
         variant: "destructive"
       });
     } finally {
@@ -115,9 +133,10 @@ const BookingRequests: React.FC = () => {
   const getStatusBadge = (status: string) => {
     const statusConfig = {
       pending: { variant: 'secondary' as const, label: 'Pending Review' },
-      approved: { variant: 'default' as const, label: 'Approved' },
-      rejected: { variant: 'destructive' as const, label: 'Rejected' },
-      completed: { variant: 'default' as const, label: 'Completed' }
+      confirmed: { variant: 'default' as const, label: 'Approved' },
+      cancelled: { variant: 'destructive' as const, label: 'Rejected' },
+      active: { variant: 'default' as const, label: 'Active' },
+      completed: { variant: 'outline' as const, label: 'Completed' }
     };
 
     const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.pending;
@@ -230,7 +249,7 @@ const BookingRequests: React.FC = () => {
                 {booking.status === 'pending' && (
                   <div className="flex space-x-3">
                     <Button
-                      onClick={() => updateBookingStatus(booking.id, 'approved')}
+                      onClick={() => updateBookingStatus(booking.id, 'confirmed')}
                       disabled={processingId === booking.id}
                       className="flex-1 bg-green-600 hover:bg-green-700"
                     >
@@ -239,7 +258,7 @@ const BookingRequests: React.FC = () => {
                     </Button>
                     <Button
                       variant="destructive"
-                      onClick={() => updateBookingStatus(booking.id, 'rejected')}
+                      onClick={() => updateBookingStatus(booking.id, 'cancelled')}
                       disabled={processingId === booking.id}
                       className="flex-1"
                     >
@@ -249,7 +268,7 @@ const BookingRequests: React.FC = () => {
                   </div>
                 )}
 
-                {booking.status === 'approved' && (
+                {booking.status === 'confirmed' && (
                   <div className="text-center py-2">
                     <p className="text-sm text-green-600 font-medium">
                       ✓ Booking approved. Customer has been notified.
@@ -257,7 +276,7 @@ const BookingRequests: React.FC = () => {
                   </div>
                 )}
 
-                {booking.status === 'rejected' && (
+                {booking.status === 'cancelled' && (
                   <div className="text-center py-2">
                     <p className="text-sm text-red-600 font-medium">
                       ✗ Booking rejected. Customer has been notified.
