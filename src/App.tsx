@@ -15,6 +15,8 @@ import BookingRequests from '@/components/booking/BookingRequests';
 import MyBookings from '@/components/booking/MyBookings';
 import UserProfile from '@/components/profile/UserProfile';
 import MessagingSystem from '@/components/messaging/MessagingSystem';
+import AddListing from '@/components/equipment/AddListing';
+import MyListings from '@/components/equipment/MyListings';
 import NotFound from '@/pages/NotFound';
 import './App.css';
 
@@ -37,6 +39,8 @@ function App() {
                       <Route path="/dashboard" element={<Dashboard />} />
                       <Route path="/booking-requests" element={<BookingRequests />} />
                       <Route path="/my-bookings" element={<MyBookings />} />
+                      <Route path="/my-listings" element={<MyListings onEditListing={() => {}} onViewListing={() => {}} />} />
+                      <Route path="/add-listing" element={<AddListing onBack={() => window.history.back()} />} />
                       <Route path="/profile" element={<UserProfile />} />
                       <Route path="/messages" element={<MessagingSystem />} />
                       <Route path="*" element={<NotFound />} />

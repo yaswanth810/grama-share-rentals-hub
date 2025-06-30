@@ -8,9 +8,6 @@ import ContactOwner from '@/components/equipment/ContactOwner';
 import AddListing from '@/components/equipment/AddListing';
 import MyListings from '@/components/equipment/MyListings';
 import BookingCalendar from '@/components/booking/BookingCalendar';
-import BookingRequests from '@/components/booking/BookingRequests';
-import MessagingSystem from '@/components/messaging/MessagingSystem';
-import UserProfile from '@/components/profile/UserProfile';
 import { Tables } from '@/integrations/supabase/types';
 
 type Listing = Tables<'listings'> & {
@@ -38,6 +35,7 @@ const Index = () => {
     return <AuthPage />;
   }
 
+  // Navigation handlers
   const handleViewDetails = (listing: Listing) => {
     setSelectedListing(listing);
     setCurrentView('listing-details');
@@ -58,6 +56,7 @@ const Index = () => {
     setCurrentView('edit-listing');
   };
 
+  // Back navigation handlers
   const handleBackToHome = () => {
     setSelectedListing(null);
     setCurrentView('home');
@@ -143,15 +142,6 @@ const Index = () => {
           />
         );
         
-      case 'bookings':
-        return <BookingRequests />;
-        
-      case 'messages':
-        return <MessagingSystem />;
-        
-      case 'profile':
-        return <UserProfile />;
-        
       default:
         return (
           <EquipmentList
@@ -164,9 +154,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-amber-50">
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-8">
-        {renderCurrentView()}
-      </main>
+      {renderCurrentView()}
     </div>
   );
 };
