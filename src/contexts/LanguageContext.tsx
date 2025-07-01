@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 type Language = 'en' | 'hi' | 'ta' | 'te';
@@ -24,15 +23,9 @@ const translations = {
     'header.signOut': 'Sign Out',
     'header.signIn': 'Sign In',
     
-    // Equipment card translations
-    'equipmentCard.new': 'New',
-    'equipmentCard.day': '/day',
-    'equipmentCard.week': '/week',
-    'equipmentCard.days': 'days',
-    'equipmentCard.viewDetails': 'View Details',
-    'equipmentCard.contact': 'Contact',
-    
     // Equipment list translations
+    'equipmentList.title': 'Find the Perfect Equipment for Your Project',
+    'equipmentList.subtitle': 'Browse thousands of tools and equipment available for rent in your area',
     'equipmentList.searchPlaceholder': 'Search equipment...',
     'equipmentList.allCategories': 'All Categories',
     'equipmentList.allConditions': 'All Conditions',
@@ -46,6 +39,18 @@ const translations = {
     'equipmentList.priceHighLow': 'Price: High to Low',
     'equipmentList.noResults': 'No equipment found',
     'equipmentList.noResultsDesc': 'Try adjusting your search or filters',
+    'equipmentList.equipmentAvailable': 'equipment available',
+    'equipmentList.equipmentsAvailable': 'equipments available',
+    'equipmentList.noEquipmentFound': 'No Equipment Found',
+    'equipmentList.tryAdjustingFilters': 'Try adjusting your filters or search terms to find what you need',
+    
+    // Equipment card translations
+    'equipmentCard.new': 'New',
+    'equipmentCard.day': '/day',
+    'equipmentCard.week': '/week',
+    'equipmentCard.days': 'days',
+    'equipmentCard.viewDetails': 'View Details',
+    'equipmentCard.contact': 'Contact',
     
     // Listing details translations
     'listingDetails.day': '/day',
@@ -93,15 +98,8 @@ const translations = {
     'header.signOut': 'साइन आउट',
     'header.signIn': 'साइन इन',
     
-    // Equipment card translations
-    'equipmentCard.new': 'नया',
-    'equipmentCard.day': '/दिन',
-    'equipmentCard.week': '/सप्ताह',
-    'equipmentCard.days': 'दिन',
-    'equipmentCard.viewDetails': 'विवरण देखें',
-    'equipmentCard.contact': 'संपर्क करें',
-    
-    // Equipment list translations
+    'equipmentList.title': 'अपने प्रोजेक्ट के लिए सही उपकरण खोजें',
+    'equipmentList.subtitle': 'अपने क्षेत्र में किराए के लिए उपलब्ध हजारों उपकरण ब्राउज़ करें',
     'equipmentList.searchPlaceholder': 'उपकरण खोजें...',
     'equipmentList.allCategories': 'सभी श्रेणियां',
     'equipmentList.allConditions': 'सभी स्थितियां',
@@ -115,8 +113,19 @@ const translations = {
     'equipmentList.priceHighLow': 'कीमत: अधिक से कम',
     'equipmentList.noResults': 'कोई उपकरण नहीं मिला',
     'equipmentList.noResultsDesc': 'अपनी खोज या फ़िल्टर समायोजित करने का प्रयास करें',
+    'equipmentList.equipmentAvailable': 'उपकरण उपलब्ध',
+    'equipmentList.equipmentsAvailable': 'उपकरण उपलब्ध',
+    'equipmentList.noEquipmentFound': 'कोई उपकरण नहीं मिला',
+    'equipmentList.tryAdjustingFilters': 'आपको जो चाहिए उसे खोजने के लिए अपने फ़िल्टर या खोज शब्दों को समायोजित करने का प्रयास करें',
     
-    // Listing details translations
+    // Equipment card translations
+    'equipmentCard.new': 'नया',
+    'equipmentCard.day': '/दिन',
+    'equipmentCard.week': '/सप्ताह',
+    'equipmentCard.days': 'दिन',
+    'equipmentCard.viewDetails': 'विवरण देखें',
+    'equipmentCard.contact': 'संपर्क करें',
+    
     'listingDetails.day': '/दिन',
     'listingDetails.week': '/सप्ताह',
     'listingDetails.month': '/महीना',
@@ -136,7 +145,6 @@ const translations = {
     'listingDetails.condition': 'स्थिति',
     'listingDetails.location': 'स्थान',
     
-    // My listings translations
     'myListings.title': 'मेरी लिस्टिंग',
     'myListings.addNew': 'नई लिस्टिंग जोड़ें',
     'myListings.noListings': 'अभी तक कोई लिस्टिंग नहीं',
@@ -162,15 +170,8 @@ const translations = {
     'header.signOut': 'வெளியேறு',
     'header.signIn': 'உள்நுழையவும்',
     
-    // Equipment card translations
-    'equipmentCard.new': 'புதிய',
-    'equipmentCard.day': '/நாள்',
-    'equipmentCard.week': '/வாரம்',
-    'equipmentCard.days': 'நாட்கள்',
-    'equipmentCard.viewDetails': 'விவரங்களைக் காண்க',
-    'equipmentCard.contact': 'தொடர்பு',
-    
-    // Equipment list translations
+    'equipmentList.title': 'உங்கள் திட்டத்திற்கான சரியான உபகரணங்களைக் கண்டறியுங்கள்',
+    'equipmentList.subtitle': 'உங்கள் பகுதியில் வாடகைக்கு கிடைக்கும் ஆயிரக்கணக்கான கருவிகள் மற்றும் உபகரணங்களை உலாவுங்கள்',
     'equipmentList.searchPlaceholder': 'உபகரணங்களைத் தேடுங்கள்...',
     'equipmentList.allCategories': 'அனைத்து வகைகள்',
     'equipmentList.allConditions': 'அனைத்து நிலைமைகள்',
@@ -184,15 +185,26 @@ const translations = {
     'equipmentList.priceHighLow': 'விலை: அதிக இருந்து குறைந்த',
     'equipmentList.noResults': 'உபகரணம் கிடைக்கவில்லை',
     'equipmentList.noResultsDesc': 'உங்கள் தேடல் அல்லது வடிகட்டிகளை சரிசெய்ய முயற்சிக்கவும்',
+    'equipmentList.equipmentAvailable': 'உபகரணம் கிடைக்கும்',
+    'equipmentList.equipmentsAvailable': 'உபகரணங்கள் கிடைக்கும்',
+    'equipmentList.noEquipmentFound': 'உபகரணம் கிடைக்கவில்லை',
+    'equipmentList.tryAdjustingFilters': 'உங்களுக்குத் தேவையானதைக் கண்டறிய உங்கள் வடிகட்டிகள் அல்லது தேடல் சொற்களை சரிசெய்ய முயற்சிக்கவும்',
     
-    // Listing details translations
+    // Equipment card translations
+    'equipmentCard.new': 'புதிய',
+    'equipmentCard.day': '/நாள்',
+    'equipmentCard.week': '/வாரம்',
+    'equipmentCard.days': 'நாட்கள்',
+    'equipmentCard.viewDetails': 'விவரங்களைக் காண்க',
+    'equipmentCard.contact': 'தொடர்பு',
+    
     'listingDetails.day': '/நாள்',
     'listingDetails.week': '/வாரம்',
     'listingDetails.month': '/மாதம்',
     'listingDetails.securityDeposit': 'பாதுகாப்பு வைப்பு',
     'listingDetails.rentalPeriod': 'வாடகை காலம்',
     'listingDetails.days': 'நாட்கள்',
-    'listingDetails.pickupOptions': 'எடுக்கும்/விநியோக விकल்பங்கள்',
+    'listingDetails.pickupOptions': 'எடுக்கும்/விநியோக விகல்பங்கள்',
     'listingDetails.pickup': 'எடுக்கும்',
     'listingDetails.delivery': 'விநியோகம்',
     'listingDetails.ownerInfo': 'உரிமையாளர் தகவல்',
@@ -205,7 +217,6 @@ const translations = {
     'listingDetails.condition': 'நிலைமை',
     'listingDetails.location': 'இடம்',
     
-    // My listings translations
     'myListings.title': 'என் பட்டியல்கள்',
     'myListings.addNew': 'புதிய பட்டியல் சேர்க்கவும்',
     'myListings.noListings': 'இன்னும் பட்டியல்கள் இல்லை',
@@ -231,15 +242,8 @@ const translations = {
     'header.signOut': 'సైన్ అవుట్',
     'header.signIn': 'సైన్ ఇన్',
     
-    // Equipment card translations
-    'equipmentCard.new': 'కొత్త',
-    'equipmentCard.day': '/రోజు',
-    'equipmentCard.week': '/వారం',
-    'equipmentCard.days': 'రోజులు',
-    'equipmentCard.viewDetails': 'వివరాలు చూడండి',
-    'equipmentCard.contact': 'సంప్రదించండి',
-    
-    // Equipment list translations
+    'equipmentList.title': 'మీ ప్రాజెక్ట్ కోసం సరైన పరికరాలను కనుగొనండి',
+    'equipmentList.subtitle': 'మీ ప్రాంతంలో అద్దెకు అందుబాటులో ఉన్న వేలాది పరికరాలను బ్రౌజ్ చేయండి',
     'equipmentList.searchPlaceholder': 'పరికరాలను వెతకండి...',
     'equipmentList.allCategories': 'అన్ని వర్గాలు',
     'equipmentList.allConditions': 'అన్ని పరిస్థితులు',
@@ -253,8 +257,19 @@ const translations = {
     'equipmentList.priceHighLow': 'ధర: ఎక్కువ నుండి తక్కువ వరకు',
     'equipmentList.noResults': 'పరికరం కనుగొనబడలేదు',
     'equipmentList.noResultsDesc': 'మీ శోధన లేదా ఫిల్టర్‌లను సర్దుబాటు చేయడానికి ప్రయత్నించండి',
+    'equipmentList.equipmentAvailable': 'పరికరం అందుబాటులో ఉంది',
+    'equipmentList.equipmentsAvailable': 'పరికరాలు అందుబాటులో ఉన్నాయి',
+    'equipmentList.noEquipmentFound': 'పరికరాలు కనుగొనబడలేదు',
+    'equipmentList.tryAdjustingFilters': 'మీకు అవసరమైనది కనుగొనడానికి మీ ఫిల్టర్‌లు లేదా శోధన పదాలను సర్దుబాటు చేయడానికి ప్రయత్నించండి',
     
-    // Listing details translations
+    // Equipment card translations
+    'equipmentCard.new': 'కొత్త',
+    'equipmentCard.day': '/రోజు',
+    'equipmentCard.week': '/వారం',
+    'equipmentCard.days': 'రోజులు',
+    'equipmentCard.viewDetails': 'వివరాలు చూడండి',
+    'equipmentCard.contact': 'సంప్రదించండి',
+    
     'listingDetails.day': '/రోజు',
     'listingDetails.week': '/వారం',
     'listingDetails.month': '/నెల',
@@ -274,7 +289,6 @@ const translations = {
     'listingDetails.condition': 'పరిస్థితి',
     'listingDetails.location': 'స్థానం',
     
-    // My listings translations
     'myListings.title': 'నా జాబితాలు',
     'myListings.addNew': 'కొత్త జాబితా జోడించండి',
     'myListings.noListings': 'ఇంకా జాబితాలు లేవు',

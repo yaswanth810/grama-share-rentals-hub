@@ -30,19 +30,47 @@ function App() {
           <MessageProvider>
             <NotificationProvider>
               <Router>
-                <div className="min-h-screen bg-gray-50">
+                <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100">
                   <Header />
-                  <main className="container mx-auto px-4 py-8">
+                  <main className="min-h-[calc(100vh-4rem)]">
                     <Routes>
                       <Route path="/" element={<Index />} />
                       <Route path="/auth" element={<AuthPage />} />
-                      <Route path="/dashboard" element={<Dashboard />} />
-                      <Route path="/booking-requests" element={<BookingRequests />} />
-                      <Route path="/my-bookings" element={<MyBookings />} />
-                      <Route path="/my-listings" element={<MyListings onEditListing={() => {}} onViewListing={() => {}} />} />
-                      <Route path="/add-listing" element={<AddListing onBack={() => window.history.back()} />} />
-                      <Route path="/profile" element={<UserProfile />} />
-                      <Route path="/messages" element={<MessagingSystem />} />
+                      <Route path="/dashboard" element={
+                        <div className="container mx-auto px-4 py-8">
+                          <Dashboard />
+                        </div>
+                      } />
+                      <Route path="/booking-requests" element={
+                        <div className="container mx-auto px-4 py-8">
+                          <BookingRequests />
+                        </div>
+                      } />
+                      <Route path="/my-bookings" element={
+                        <div className="container mx-auto px-4 py-8">
+                          <MyBookings />
+                        </div>
+                      } />
+                      <Route path="/my-listings" element={
+                        <div className="container mx-auto px-4 py-8">
+                          <MyListings onEditListing={() => {}} onViewListing={() => {}} />
+                        </div>
+                      } />
+                      <Route path="/add-listing" element={
+                        <div className="container mx-auto px-4 py-8">
+                          <AddListing onBack={() => window.history.back()} />
+                        </div>
+                      } />
+                      <Route path="/profile" element={
+                        <div className="container mx-auto px-4 py-8">
+                          <UserProfile />
+                        </div>
+                      } />
+                      <Route path="/messages" element={
+                        <div className="container mx-auto px-4 py-8">
+                          <MessagingSystem />
+                        </div>
+                      } />
                       <Route path="*" element={<NotFound />} />
                     </Routes>
                   </main>
