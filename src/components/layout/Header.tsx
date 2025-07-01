@@ -13,7 +13,8 @@ import {
   Calendar,
   MessageSquare,
   BarChart3,
-  Plus
+  Plus,
+  Languages
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -76,7 +77,7 @@ const Header: React.FC = () => {
                     }`}
                   >
                     <Icon className="h-4 w-4" />
-                    <span>{item.label}</span>
+                    <span className="hidden xl:inline">{item.label}</span>
                   </Link>
                 );
               })}
@@ -84,8 +85,20 @@ const Header: React.FC = () => {
           )}
 
           {/* Right side */}
-          <div className="flex items-center space-x-3">
-            <LanguageSwitcher />
+          <div className="flex items-center space-x-2">
+            {/* Language Switcher - Icon Only */}
+            <Button
+              variant="outline"
+              size="sm"
+              className="flex items-center justify-center w-10 h-10 p-0"
+              onClick={() => {
+                // Toggle between languages
+                const { language, setLanguage } = useLanguage();
+                setLanguage(language === 'en' ? 'te' : 'en');
+              }}
+            >
+              <Languages className="h-4 w-4" />
+            </Button>
             
             {user ? (
               <>
@@ -96,40 +109,58 @@ const Header: React.FC = () => {
                   className="hidden md:flex items-center space-x-2 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 shadow-md hover:shadow-lg transition-all duration-200"
                 >
                   <Plus className="h-4 w-4" />
-                  <span>{t('header.addListing')}</span>
+                  <span className="hidden lg:inline">{t('header.addListing')}</span>
                 </Button>
 
                 {/* Notifications */}
                 <NotificationDropdown />
 
-                {/* User Menu */}
-                <div className="flex items-center space-x-2">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => navigate('/profile')}
-                    className="flex items-center space-x-2 hover:bg-gray-100 transition-colors"
-                  >
-                    <User className="h-4 w-4" />
-                    <span className="hidden md:inline">{t('header.profile')}</span>
-                  </Button>
+                {/* Messages - Icon Only */}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => navigate('/messages')}
+                  className={`flex items-center justify-center w-10 h-10 p-0 transition-colors ${
+                    isActive('/messages') 
+                      ? 'bg-green-100 text-green-700' 
+                      : 'hover:bg-gray-100'
+                  }`}
+                  title={t('header.messages')}
+                >
+                  <MessageSquare className="h-4 w-4" />
+                </Button>
 
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={handleSignOut}
-                    className="flex items-center space-x-2 text-red-600 hover:text-red-700 hover:bg-red-50 transition-colors"
-                  >
-                    <LogOut className="h-4 w-4" />
-                    <span className="hidden md:inline">{t('header.signOut')}</span>
-                  </Button>
-                </div>
+                {/* Profile - Icon Only */}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => navigate('/profile')}
+                  className={`flex items-center justify-center w-10 h-10 p-0 transition-colors ${
+                    isActive('/profile') 
+                      ? 'bg-green-100 text-green-700' 
+                      : 'hover:bg-gray-100'
+                  }`}
+                  title={t('header.profile')}
+                >
+                  <User className="h-4 w-4" />
+                </Button>
+
+                {/* Sign Out - Icon Only */}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleSignOut}
+                  className="flex items-center justify-center w-10 h-10 p-0 text-red-600 hover:text-red-700 hover:bg-red-50 transition-colors"
+                  title={t('header.signOut')}
+                >
+                  <LogOut className="h-4 w-4" />
+                </Button>
 
                 {/* Mobile Menu Button */}
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="lg:hidden"
+                  className="lg:hidden w-10 h-10 p-0"
                   onClick={() => setIsMenuOpen(!isMenuOpen)}
                 >
                   {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
