@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 type Language = 'en' | 'hi' | 'ta' | 'te';
@@ -51,6 +52,15 @@ const translations = {
     'equipmentCard.days': 'days',
     'equipmentCard.viewDetails': 'View Details',
     'equipmentCard.contact': 'Contact',
+    
+    // Add Listing translations (missing keys)
+    'addListing.backToListings': 'Back to Listings',
+    'addListing.pricing': 'Pricing',
+    'addListing.rentalTerms': 'Rental Terms',
+    'addListing.minRentalDays': 'Minimum Rental Days',
+    'addListing.maxRentalDays': 'Maximum Rental Days',
+    'addListing.pickupOptions': 'Pickup/Delivery Options',
+    'addListing.securityDeposit': 'Security Deposit',
     
     // Listing details translations
     'listingDetails.day': '/day',
@@ -126,6 +136,15 @@ const translations = {
     'equipmentCard.viewDetails': 'विवरण देखें',
     'equipmentCard.contact': 'संपर्क करें',
     
+    // Add Listing translations (missing keys)
+    'addListing.backToListings': 'लिस्टिंग पर वापस जाएं',
+    'addListing.pricing': 'मूल्य निर्धारण',
+    'addListing.rentalTerms': 'किराया नियम',
+    'addListing.minRentalDays': 'न्यूनतम किराया दिन',
+    'addListing.maxRentalDays': 'अधिकतम किराया दिन',
+    'addListing.pickupOptions': 'पिकअप/डिलीवरी विकल्प',
+    'addListing.securityDeposit': 'सिक्यूरिटी डिपॉज़िट',
+    
     'listingDetails.day': '/दिन',
     'listingDetails.week': '/सप्ताह',
     'listingDetails.month': '/महीना',
@@ -198,6 +217,15 @@ const translations = {
     'equipmentCard.viewDetails': 'விவரங்களைக் காண்க',
     'equipmentCard.contact': 'தொடர்பு',
     
+    // Add Listing translations (missing keys)
+    'addListing.backToListings': 'பட்டியல்களுக்குத் திரும்பு',
+    'addListing.pricing': 'விலை நிர்ணயம்',
+    'addListing.rentalTerms': 'வாடகை நிபந்தனைகள்',
+    'addListing.minRentalDays': 'குறைந்தபட்ச வாடகை நாட்கள்',
+    'addListing.maxRentalDays': 'அதிகபட்ச வாடகை நாட்கள்',
+    'addListing.pickupOptions': 'எடுக்கும்/விநியோக விகல்பங்கள்',
+    'addListing.securityDeposit': 'பாதுகாப்பு வைப்பு',
+    
     'listingDetails.day': '/நாள்',
     'listingDetails.week': '/வாரம்',
     'listingDetails.month': '/மாதம்',
@@ -269,6 +297,15 @@ const translations = {
     'equipmentCard.days': 'రోజులు',
     'equipmentCard.viewDetails': 'వివరాలు చూడండి',
     'equipmentCard.contact': 'సంప్రదించండి',
+    
+    // Add Listing translations (missing keys)
+    'addListing.backToListings': 'జాబితాలకు తిరిగి వెళ్లండి',
+    'addListing.pricing': 'ధర నిర్ణయం',
+    'addListing.rentalTerms': 'అద్దె నిబంధనలు',
+    'addListing.minRentalDays': 'కనిష్ట అద్దె రోజులు',
+    'addListing.maxRentalDays': 'గరిష్ట అద్దె రోజులు',
+    'addListing.pickupOptions': 'పికప్/డెలివరీ ఎంపికలు',
+    'addListing.securityDeposit': 'సెక్యూరిటీ డిపాజిట్',
     
     'listingDetails.day': '/రోజు',
     'listingDetails.week': '/వారం',
