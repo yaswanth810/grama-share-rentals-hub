@@ -14,16 +14,22 @@ import {
   MessageSquare,
   BarChart3,
   Plus,
-  Languages
+  Languages,
+  ChevronDown
 } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import NotificationDropdown from '@/components/notifications/NotificationDropdown';
-import LanguageSwitcher from '@/components/ui/LanguageSwitcher';
 
 const Header: React.FC = () => {
   const { user, signOut } = useAuth();
-  const { t } = useLanguage();
+  const { t, language, setLanguage } = useLanguage();
   const navigate = useNavigate();
   const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -33,16 +39,24 @@ const Header: React.FC = () => {
     navigate('/');
   };
 
+  const handleLanguageToggle = () => {
+    setLanguage(language === 'en' ? 'te' : 'en');
+  };
+
   const navigationItems = [
     { path: '/', label: t('header.browse'), icon: Home },
     { path: '/dashboard', label: t('header.dashboard'), icon: BarChart3 },
     { path: '/my-listings', label: t('header.myListings'), icon: Package },
-    { path: '/booking-requests', label: t('header.bookingRequests'), icon: Calendar },
-    { path: '/my-bookings', label: t('header.myBookings'), icon: Calendar },
     { path: '/messages', label: t('header.messages'), icon: MessageSquare },
   ];
 
+  const bookingItems = [
+    { path: '/booking-requests', label: t('header.bookingRequests') },
+    { path: '/my-bookings', label: t('header.myBookings') },
+  ];
+
   const isActive = (path: string) => location.pathname === path;
+  const isBookingActive = () => bookingItems.some(item => isActive(item.path));
 
   return (
     <header className="bg-white shadow-lg border-b sticky top-0 z-50">
@@ -81,6 +95,40 @@ const Header: React.FC = () => {
                   </Link>
                 );
               })}
+              
+              {/* Booking Dropdown */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    className={`flex items-center space-x-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
+                      isBookingActive()
+                        ? 'bg-green-100 text-green-700 shadow-sm'
+                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                    }`}
+                  >
+                    <Calendar className="h-4 w-4" />
+                    <span className="hidden xl:inline">Bookings</span>
+                    <ChevronDown className="h-3 w-3" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start" className="w-48 bg-white border shadow-lg">
+                  {bookingItems.map((item) => (
+                    <DropdownMenuItem key={item.path} asChild>
+                      <Link
+                        to={item.path}
+                        className={`flex items-center w-full px-2 py-2 text-sm transition-colors ${
+                          isActive(item.path)
+                            ? 'bg-green-100 text-green-700'
+                            : 'hover:bg-gray-100'
+                        }`}
+                      >
+                        {item.label}
+                      </Link>
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
             </nav>
           )}
 
@@ -91,11 +139,8 @@ const Header: React.FC = () => {
               variant="outline"
               size="sm"
               className="flex items-center justify-center w-10 h-10 p-0"
-              onClick={() => {
-                // Toggle between languages
-                const { language, setLanguage } = useLanguage();
-                setLanguage(language === 'en' ? 'te' : 'en');
-              }}
+              onClick={handleLanguageToggle}
+              title="Switch Language"
             >
               <Languages className="h-4 w-4" />
             </Button>
@@ -114,21 +159,6 @@ const Header: React.FC = () => {
 
                 {/* Notifications */}
                 <NotificationDropdown />
-
-                {/* Messages - Icon Only */}
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => navigate('/messages')}
-                  className={`flex items-center justify-center w-10 h-10 p-0 transition-colors ${
-                    isActive('/messages') 
-                      ? 'bg-green-100 text-green-700' 
-                      : 'hover:bg-gray-100'
-                  }`}
-                  title={t('header.messages')}
-                >
-                  <MessageSquare className="h-4 w-4" />
-                </Button>
 
                 {/* Profile - Icon Only */}
                 <Button
@@ -199,6 +229,29 @@ const Header: React.FC = () => {
                   </Link>
                 );
               })}
+              
+              {/* Mobile Booking Items */}
+              <div className="border-t pt-2 mt-2 mx-2">
+                <div className="px-2 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                  Bookings
+                </div>
+                {bookingItems.map((item) => (
+                  <Link
+                    key={item.path}
+                    to={item.path}
+                    className={`flex items-center space-x-3 px-4 py-3 text-sm font-medium transition-colors rounded-lg ${
+                      isActive(item.path)
+                        ? 'bg-green-100 text-green-700'
+                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                    }`}
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    <Calendar className="h-5 w-5" />
+                    <span>{item.label}</span>
+                  </Link>
+                ))}
+              </div>
+              
               <div className="border-t pt-2 mt-2 mx-2">
                 <Link
                   to="/add-listing"
