@@ -20,7 +20,16 @@ type Listing = Tables<'listings'> & {
 
 const Index = () => {
   const { user, loading } = useAuth();
-  const { currentView, selectedListing, navigate } = useNavigation();
+  const { 
+    currentView, 
+    selectedListing, 
+    navigateToView,
+    navigateToListingDetails,
+    navigateToContact,
+    navigateToBooking,
+    navigateToEdit,
+    navigateToHome
+  } = useNavigation();
 
   if (loading) {
     return (
@@ -49,8 +58,8 @@ const Index = () => {
           <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-amber-50 py-8">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <EquipmentList
-                onViewDetails={(listing) => navigate('listing-details', listing)}
-                onContact={(listing) => navigate('contact-owner', listing)}
+                onViewDetails={(listing) => navigateToListingDetails(listing)}
+                onContact={(listing) => navigateToContact(listing)}
               />
             </div>
           </div>
@@ -62,9 +71,9 @@ const Index = () => {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <ListingDetails
                 listing={selectedListing}
-                onBack={() => navigate('home')}
-                onContact={(listing) => navigate('contact-owner', listing)}
-                onBooking={(listing) => navigate('booking', listing)}
+                onBack={() => navigateToHome()}
+                onContact={(listing) => navigateToContact(listing)}
+                onBooking={(listing) => navigateToBooking(listing)}
               />
             </div>
           </div>
@@ -80,7 +89,7 @@ const Index = () => {
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
               <ContactOwner
                 listing={selectedListing}
-                onBack={() => navigate('listing-details')}
+                onBack={() => navigateToView('listing-details')}
               />
             </div>
           </div>
@@ -96,8 +105,8 @@ const Index = () => {
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
               <BookingCalendar
                 listing={selectedListing}
-                onBookingComplete={() => navigate('home')}
-                onCancel={() => navigate('listing-details')}
+                onBookingComplete={() => navigateToHome()}
+                onCancel={() => navigateToView('listing-details')}
               />
             </div>
           </div>
@@ -111,7 +120,7 @@ const Index = () => {
         return (
           <div className="min-h-screen bg-gradient-to-br from-amber-50 to-white py-8">
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-              <AddListing onBack={() => navigate('home')} />
+              <AddListing onBack={() => navigateToHome()} />
             </div>
           </div>
         );
@@ -122,7 +131,7 @@ const Index = () => {
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
               <AddListing 
                 listing={selectedListing} 
-                onBack={() => navigate('my-listings')} 
+                onBack={() => navigateToView('my-listings')} 
               />
             </div>
           </div>
@@ -137,8 +146,8 @@ const Index = () => {
           <div className="min-h-screen bg-gradient-to-br from-green-50 to-white py-8">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <MyListings
-                onEditListing={(listing) => navigate('edit-listing', listing)}
-                onViewListing={(listing) => navigate('listing-details', listing)}
+                onEditListing={(listing) => navigateToEdit(listing)}
+                onViewListing={(listing) => navigateToListingDetails(listing)}
               />
             </div>
           </div>
@@ -149,8 +158,8 @@ const Index = () => {
           <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-amber-50 py-8">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <EquipmentList
-                onViewDetails={(listing) => navigate('listing-details', listing)}
-                onContact={(listing) => navigate('contact-owner', listing)}
+                onViewDetails={(listing) => navigateToListingDetails(listing)}
+                onContact={(listing) => navigateToContact(listing)}
               />
             </div>
           </div>
