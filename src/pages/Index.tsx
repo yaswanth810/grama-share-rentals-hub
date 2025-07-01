@@ -11,12 +11,6 @@ import MyListings from '@/components/equipment/MyListings';
 import BookingCalendar from '@/components/booking/BookingCalendar';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import ErrorMessage from '@/components/ui/ErrorMessage';
-import { Tables } from '@/integrations/supabase/types';
-
-type Listing = Tables<'listings'> & {
-  profiles: Tables<'profiles'>;
-  categories: Tables<'categories'>;
-};
 
 const Index = () => {
   const { user, loading } = useAuth();
@@ -70,10 +64,10 @@ const Index = () => {
           <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white py-8">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <ListingDetails
-                listing={selectedListing}
+                listing={selectedListing as any}
                 onBack={() => navigateToHome()}
-                onContact={(listing) => navigateToContact(listing)}
-                onBooking={(listing) => navigateToBooking(listing)}
+                onContact={(listing) => navigateToContact(listing as any)}
+                onBooking={(listing) => navigateToBooking(listing as any)}
               />
             </div>
           </div>
@@ -88,7 +82,7 @@ const Index = () => {
           <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white py-8">
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
               <ContactOwner
-                listing={selectedListing}
+                listing={selectedListing as any}
                 onBack={() => navigateToView('listing-details')}
               />
             </div>
@@ -104,7 +98,7 @@ const Index = () => {
           <div className="min-h-screen bg-gradient-to-br from-purple-50 to-white py-8">
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
               <BookingCalendar
-                listing={selectedListing}
+                listing={selectedListing as any}
                 onBookingComplete={() => navigateToHome()}
                 onCancel={() => navigateToView('listing-details')}
               />
@@ -130,7 +124,7 @@ const Index = () => {
           <div className="min-h-screen bg-gradient-to-br from-amber-50 to-white py-8">
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
               <AddListing 
-                listing={selectedListing} 
+                listing={selectedListing as any} 
                 onBack={() => navigateToView('my-listings')} 
               />
             </div>
@@ -146,8 +140,8 @@ const Index = () => {
           <div className="min-h-screen bg-gradient-to-br from-green-50 to-white py-8">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <MyListings
-                onEditListing={(listing) => navigateToEdit(listing)}
-                onViewListing={(listing) => navigateToListingDetails(listing)}
+                onEditListing={(listing) => navigateToEdit(listing as any)}
+                onViewListing={(listing) => navigateToListingDetails(listing as any)}
               />
             </div>
           </div>
